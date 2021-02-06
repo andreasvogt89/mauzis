@@ -66,7 +66,7 @@ async function getState() {
     await fetch("https://app.api.surehub.io/api/me/start", {
             "headers": {
                 "accept": "application/json, text/plain, */*",
-                "authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwcC5hcGkuc3VyZWh1Yi5pby9hcGkvYXV0aC9sb2dpbiIsImlhdCI6MTYxMjYxMzU1OSwiZXhwIjoxNjQ0MDYzMTU5LCJuYmYiOjE2MTI2MTM1NTksImp0aSI6Ijd5bEh0b3dJVTE0OVNreFEiLCJzdWIiOjcxNzgyLCJwcnYiOiJiM2VkM2RiMzM0YzJiYzMzYjE4NDI2OTQ3NTU3NTZhM2ZmYmY1YTdkIiwiZGV2aWNlX2lkIjoiYWE3N2RkNjExMDc4Y2U5YTg4MjFmZGYwNjcwZWI2NTUifQ.3a3-tTbMN20YnHcwo1BSxREMA3ND0_99L75c6ShtMB8",
+                "authorization": `Bearer ${loginData.token}`,
                 "x-app-version": "browser",
             },
             "referrer": "https://www.surepetcare.io/",
