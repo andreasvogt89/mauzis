@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
-const { toggleDoor, startLoginPolling } = require('./mauzis/petcare');
+const { toggleDoor, startLoginPolling, getState } = require('./mauzis/petcare');
 const { iniTelegramBot } = require('./telegram/temegram');
 require('dotenv').config();
 const middlewares = require('./middlewares');
@@ -29,6 +29,10 @@ if (process.env.NODE_ENV === 'production') {
 
 app.get('/door', async(req, res) => {
     res.send(await toggleDoor(req.query.bit));
+});
+
+app.get('/status', async(req, res) => {
+    res.send(await getState());
 });
 
 app.use(middlewares.notFound);

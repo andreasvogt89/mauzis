@@ -30,21 +30,21 @@ function iniTelegramBot() {
     // messages.
     bot.on('message', async(msg) => {
         const chatId = msg.chat.id;
-        if (msg.text === "zue") {
+        if (msg.text.toLocaleLowerCase() === "zue") {
             console.log('lock door');
             let res = await toggleDoor(1);
             if (Array.isArray(res.results)) {
-                bot.sendMessage(chatId, "✔");
+                bot.sendMessage(chatId, "ok 😊");
             } else if (res.results) {
                 bot.sendMessage(chatId, "isch dänk scho zue😝")
             } else {
                 bot.sendMessage(chatId, "öpis isch nid guet😑")
             };
-        } else if (msg.text === "uf") {
+        } else if (msg.text.toLocaleLowerCase() === "uf") {
             console.log('unlock door');
             let res = await toggleDoor(0);
             if (Array.isArray(res.results)) {
-                bot.sendMessage(chatId, "✔");
+                bot.sendMessage(chatId, "ok 😊");
             } else if (res.results) {
                 bot.sendMessage(chatId, "isch dänk scho zue😝")
             } else {
