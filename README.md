@@ -1,8 +1,8 @@
 # Mauzis
 
 ## TODO 
-- [ ] Create little frontend
-- [ ] Handle State of all houshold things
+- [ ] Create a simple frontend
+- [ ] Handle state of all household things
 
 ### Example of door lock/unlock response
 ```
