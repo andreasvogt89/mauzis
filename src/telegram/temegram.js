@@ -2,6 +2,7 @@ require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const token = process.env.BOT_ID;
 const { toggleDoor } = require('../mauzis/petcare');
+const logger = require('../logs/logger');
 
 function iniTelegramBot() {
 
@@ -9,7 +10,7 @@ function iniTelegramBot() {
     const bot = new TelegramBot(token, { polling: true });
 
     bot.on('polling_error', (error) => {
-        console.log("Bot is invalid" + error);
+        logger.error("Bot is invalid" + error);
         bot.stopPolling();
     });
 
@@ -31,7 +32,7 @@ function iniTelegramBot() {
     bot.on('message', async(msg) => {
         const chatId = msg.chat.id;
         if (msg.text.toLocaleLowerCase() === "zue") {
-            console.log('lock door');
+            logger.info('lock door');
             let res = await toggleDoor(1);
             if (Array.isArray(res.results)) {
                 bot.sendMessage(chatId, "ok 😊");
@@ -41,12 +42,12 @@ function iniTelegramBot() {
                 bot.sendMessage(chatId, "öpis isch nid guet😑")
             };
         } else if (msg.text.toLocaleLowerCase() === "uf") {
-            console.log('unlock door');
+            logger.info('unlock door');
             let res = await toggleDoor(0);
             if (Array.isArray(res.results)) {
                 bot.sendMessage(chatId, "ok 😊");
             } else if (res.results) {
-                bot.sendMessage(chatId, "isch dänk scho zue😝")
+                bot.sendMessage(chatId, "isch dänk scho offe😝")
             } else {
                 bot.sendMessage(chatId, "öpis isch nid guet😑")
             };

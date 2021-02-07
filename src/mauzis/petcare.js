@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 require('dotenv').config();
+const logger = require('../logs/logger');
 let loginData;
 let loginInterval = 1800
 
@@ -29,10 +30,10 @@ function login() {
             "credentials": "omit"
         }).then(res => res.json())
         .then(json => {
-            console.log(`Login successful => next in ${loginInterval}s`);
+            logger.info(`Login successful => next in ${loginInterval}s`);
             loginData = json.data;
         }).catch(e => {
-            console.error(`Login failed: ${e}`);
+            logger.error(`Login failed: ${e}`);
         });
 }
 
@@ -52,10 +53,10 @@ async function toggleDoor(bit) {
             "mode": "cors"
         }).then(festchresult => festchresult.json())
         .then(jsonResult => {
-            console.log(jsonResult);
+            logger.info(jsonResult);
             result = jsonResult
         }).catch((err) => {
-            console.log(err);
+            logger.error(err);
             result = err
         });
     return result;
@@ -79,7 +80,7 @@ async function getState() {
         .then(jsonResult => {
             result = jsonResult
         }).catch((err) => {
-            console.log(err);
+            logger.error(err);
             result = err
         });
     return result;
