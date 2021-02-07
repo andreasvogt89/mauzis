@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const helmet = require('helmet');
 const cors = require('cors');
-const { toggleDoor, startLoginPolling, getState } = require('./mauzis/petcare');
+const { toggleDoor, startLoginPolling, getState, resetFeeders } = require('./mauzis/petcare');
 const { iniTelegramBot } = require('./telegram/temegram');
 require('dotenv').config();
 const middlewares = require('./middlewares');
@@ -32,6 +32,10 @@ app.get('/door', async(req, res) => {
 
 app.get('/status', async(req, res) => {
     res.send(await getState());
+});
+
+app.get('/feeders', async(req, res) => {
+    res.send(await resetFeeders(req.query.tare));
 });
 
 app.use(middlewares.notFound);

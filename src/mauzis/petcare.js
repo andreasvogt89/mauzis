@@ -1,10 +1,11 @@
 const fetch = require('node-fetch');
 require('dotenv').config();
-const logger = require('../logs/logger');
+const logger = require('../logger');
 let loginData;
 let loginInterval = 1800
+let household;
 
-function startLoginPolling() {
+async function startLoginPolling() {
     login();
     setInterval(login, 1000 * loginInterval);
 }
@@ -32,6 +33,7 @@ function login() {
         .then(json => {
             logger.info(`Login successful => next in ${loginInterval}s`);
             loginData = json.data;
+            getState();
         }).catch(e => {
             logger.error(`Login failed: ${e}`);
         });
@@ -78,7 +80,8 @@ async function getState() {
             "credentials": "include"
         }).then(festchresult => festchresult.json())
         .then(jsonResult => {
-            result = jsonResult
+            result = jsonResult;
+            household = jsonResult.data;
         }).catch((err) => {
             logger.error(err);
             result = err
@@ -86,8 +89,57 @@ async function getState() {
     return result;
 }
 
+async function resetFeeders(tareNumber) {
+    try {
+        let feeders = getFeederIDs();
+        await asyncForEach(feeders, device_id => {
+            fetch(`https://app.api.surehub.io/api/device/${device_id}/control`, {
+                    "headers": {
+                        "accept": "application/json, text/plain, */*",
+                        "authorization": `Bearer ${loginData.token}`,
+                        "content-type": "application/json",
+                        "x-app-version": "browser",
+
+                    },
+                    "referrer": "https://surepetcare.io/",
+                    "referrerPolicy": "strict-origin-when-cross-origin",
+                    "body": `{\"tare\":${tareNumber}}`,
+                    "method": "PUT",
+                    "mode": "cors",
+                    "credentials": "include"
+                }).then(festchresult => festchresult.json())
+                .then(jsonResult => {
+                    logger.info(JSON.stringify(jsonResult))
+                });
+        });
+    } catch (e) {
+        logger.error(e);
+        return e
+    }
+}
+
+function getFeederIDs() {
+    if (household) {
+        let feederIDs = []
+        household.devices.forEach(device => {
+            if (device.product_id === 4) {
+                feederIDs.push(device.id);
+            }
+        });
+        return feederIDs;
+    } else throw new Error("NO Devices");
+
+}
+
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+}
+
 module.exports = {
     getState,
     toggleDoor,
-    startLoginPolling
+    startLoginPolling,
+    resetFeeders
 }

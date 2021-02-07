@@ -2,7 +2,7 @@ require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const token = process.env.BOT_ID;
 const { toggleDoor } = require('../mauzis/petcare');
-const logger = require('../logs/logger');
+const logger = require('../logger');
 
 function iniTelegramBot() {
 

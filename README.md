@@ -3,6 +3,7 @@
 ## TODO 
 - [ ] Create a simple frontend
 - [ ] Handle state of all household things
+- [ ] create telegram reset for bowls
 
 ### Example of door lock/unlock response
 ```
@@ -25,6 +26,10 @@
 }
 
 ```
+```
+{"data":{"bowls":{"settings":[{"food_type":2,"target":10},{"food_type":1,"target":100}],"type":4},"fast_polling":true,"lid":{"close_delay":0},"tare":3,"training_mode":0},"results":[{"requestId":"1334549a-7004-4832-819e-53e1120636ce","responseId":"67c792f6-c2ef-1779-bc12-4314169a316f","status":0,"timeToSend":135,"timeToRespond":1357,"data":{"tare":3}}]}
+```
+
 
 Copy in Unraid
 ```
