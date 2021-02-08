@@ -1,9 +1,11 @@
 # Mauzis
 
-## TODO 
+## TODO
+- [x] create connection to sure petcare with auto login interval
+- [x] create door set function (api/telegram) 
 - [ ] Create a simple frontend
-- [ ] Handle state of all household things
-- [ ] create telegram reset for bowls
+- [x] Handle state of all household things (get by api)
+- [x] create reset for bowls (api/telegram)
 
 ### Example of door lock/unlock response
 ```

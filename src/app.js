@@ -7,22 +7,20 @@ const { iniTelegramBot } = require('./telegram/temegram');
 require('dotenv').config();
 const middlewares = require('./middlewares');
 const app = express();
-
-app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 startLoginPolling();
 iniTelegramBot();
 if (process.env.NODE_ENV === 'production') {
+    app.use(morgan('combined', {
+        skip: function(req, res) { return res.statusCode < 400 }
+    }));
     app.use(express.static(__dirname + '/public/'));
-    app.get(/.*!/, (req, res) =>
-        res.sendFile(__dirname + './public/index.html'));
 } else {
-    app.get('/', (req, res) => {
-        res.json({
-            message: "Developer mode 🐱‍👤"
-        });
+    app.use(morgan('dev'));
+    app.get('/', async(req, res) => {
+        res.json(await getState());
     });
 }
 
@@ -36,6 +34,10 @@ app.get('/status', async(req, res) => {
 
 app.get('/feeders', async(req, res) => {
     res.send(await resetFeeders(req.query.tare));
+});
+
+app.get('/feeder', async(req, res) => {
+    res.send(await resetFeeder(req.query.tare, device_id));
 });
 
 app.use(middlewares.notFound);

@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 require('dotenv').config();
 const logger = require('../logger');
 let loginData;
-let loginInterval = 1800
+let loginInterval = 3600
 let household;
 
 async function startLoginPolling() {
@@ -55,7 +55,6 @@ async function toggleDoor(bit) {
             "mode": "cors"
         }).then(festchresult => festchresult.json())
         .then(jsonResult => {
-            logger.info(jsonResult);
             result = jsonResult
         }).catch((err) => {
             logger.error(err);
@@ -89,11 +88,39 @@ async function getState() {
     return result;
 }
 
+async function resetFeeder(tareNumber, device_id) {
+    let result = null;
+    await fetch(`https://app.api.surehub.io/api/device/${device_id}/control`, {
+            "headers": {
+                "accept": "application/json, text/plain, */*",
+                "authorization": `Bearer ${loginData.token}`,
+                "content-type": "application/json",
+                "x-app-version": "browser",
+
+            },
+            "referrer": "https://surepetcare.io/",
+            "referrerPolicy": "strict-origin-when-cross-origin",
+            "body": `{\"tare\":${tareNumber}}`,
+            "method": "PUT",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(festchresult => festchresult.json())
+        .then(jsonResult => {
+            result = jsonResult;
+        }).catch((err) => {
+            logger.error(err);
+            result = err
+        });
+    return result;
+}
+
 async function resetFeeders(tareNumber) {
     try {
         let feeders = getFeederIDs();
-        await asyncForEach(feeders, device_id => {
-            fetch(`https://app.api.surehub.io/api/device/${device_id}/control`, {
+        let result = [];
+        console.log(tareNumber);
+        await asyncForEach(feeders, async(device_id) => {
+            await fetch(`https://app.api.surehub.io/api/device/${device_id}/control`, {
                     "headers": {
                         "accept": "application/json, text/plain, */*",
                         "authorization": `Bearer ${loginData.token}`,
@@ -109,9 +136,16 @@ async function resetFeeders(tareNumber) {
                     "credentials": "include"
                 }).then(festchresult => festchresult.json())
                 .then(jsonResult => {
-                    logger.info(JSON.stringify(jsonResult))
+                    household.devices.forEach(device => {
+                        if (device.id == device_id) {
+                            result.push({ "bowl": device.name, "result": jsonResult.results[0].status });
+                            return
+                        }
+                    });
+
                 });
         });
+        return result
     } catch (e) {
         logger.error(e);
         return e
@@ -141,5 +175,6 @@ module.exports = {
     getState,
     toggleDoor,
     startLoginPolling,
-    resetFeeders
+    resetFeeders,
+    resetFeeder
 }
