@@ -1,7 +1,7 @@
 # Mauzis
   ### This code is connectiong to the Sure Petcare server by a valid account and provieds some functions to interact with Petcare devices.
   
-  ## Not finished yet
+  ## Not finished yet!
   
 ## TODO
 - [x] create connection to sure petcare with auto login interval
