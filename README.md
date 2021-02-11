@@ -1,5 +1,8 @@
 # Mauzis
-
+  ### This code is connectiong to the Sure Petcare server by a valid account and provieds some functions to interact with Petcare devices.
+  
+  ## Not finished yet!
+  
 ## TODO
 - [x] create connection to sure petcare with auto login interval
 - [x] create door set function (api/telegram) 
@@ -28,12 +31,7 @@
 }
 
 ```
-```
-{"data":{"bowls":{"settings":[{"food_type":2,"target":10},{"food_type":1,"target":100}],"type":4},"fast_polling":true,"lid":{"close_delay":0},"tare":3,"training_mode":0},"results":[{"requestId":"1334549a-7004-4832-819e-53e1120636ce","responseId":"67c792f6-c2ef-1779-bc12-4314169a316f","status":0,"timeToSend":135,"timeToRespond":1357,"data":{"tare":3}}]}
-```
-
-
-Copy in Unraid
+Copy in Unraid (Domain specific)
 ```
 cp /boot/config/plugins/dockerMAn/templates-user/my-Mauzis.xml /boot/config/plugins/community.applications/private/myrepo
 ```
