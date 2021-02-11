@@ -118,7 +118,7 @@ async function resetFeeders(tareNumber) {
     try {
         let feeders = getFeederIDs();
         let result = [];
-        console.log(tareNumber);
+
         await asyncForEach(feeders, async(device_id) => {
             await fetch(`https://app.api.surehub.io/api/device/${device_id}/control`, {
                     "headers": {
@@ -138,6 +138,7 @@ async function resetFeeders(tareNumber) {
                 .then(jsonResult => {
                     household.devices.forEach(device => {
                         if (device.id == device_id) {
+                            logger.info(jsonResult.results[0]);
                             result.push({ "bowl": device.name, "result": jsonResult.results[0].status });
                             return
                         }
