@@ -23,7 +23,7 @@
         "helmet": "^4.4.1",
         "morgan": "^1.10.0",
         "node-fetch": "^2.6.1",
-        "node-telegram-bot-api": "^0.51.0",
+        "telegraf": "^4.1.2",
         "winston": "^3.3.3"
     },
     "devDependencies": {

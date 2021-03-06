@@ -1,9 +1,9 @@
 require('dotenv').config();
-const TelegramBot = require('node-telegram-bot-api');
-const token = process.env.BOT_ID;
 const { toggleDoor, resetFeeders } = require('../mauzis/petcare');
 const logger = require('../logger');
 const commands = new Map();
+const { Telegraf } = require('telegraf');
+
 
 
 function iniTelegramBot() {
@@ -13,59 +13,33 @@ function iniTelegramBot() {
     commands.set("rechts", setResetFeeders)
     commands.set("alle", setResetFeeders)
         // Create a bot that uses 'polling' to fetch new updates
-    const bot = new TelegramBot(token, { polling: true });
-
-    bot.on('polling_error', (error) => {
-        logger.error("Bot is invalid" + error);
-        bot.stopPolling();
-    });
-
-    // Matches "/echo [whatever]"
-    bot.onText(/\/echo (.+)/, (msg, match) => {
-        // 'msg' is the received Message from Telegram
-        // 'match' is the result of executing the regexp above on the text content
-        // of the message
-
-        const chatId = msg.chat.id;
-        const resp = match[1]; // the captured "whatever"
-
-        // send back the matched "whatever" to the chat
-        bot.sendMessage(chatId, resp);
-    });
+    const bot = new Telegraf(process.env.BOT_ID);
+    bot.launch();
 
     // Listen for any kind of message. There are different kinds of
     // messages.
-    bot.on('message', async(msg) => {
-        const chatId = msg.chat.id;
+    bot.on('text', async(ctx) => {
         let answer = "";
-        let text = msg.text.toLocaleLowerCase();
+        let text = ctx.message.text.toLocaleLowerCase();
         try {
             let foo = commands.get(text);
             answer = await foo(text);
-            bot.sendMessage(chatId, answer);
+            ctx.reply(answer);
         } catch (e) {
             let commandsList = "";
             commands.forEach((val, key) => {
                 commandsList = commandsList + `${key}\n`
             });
-            bot.sendMessage(chatId, `${text} isch ke befehl, benutz:\n${commandsList}`);
+            ctx.reply(`${text} isch ke befehl, benutz:\n${commandsList}`);
         }
     });
 
 }
 
 async function setDoorState(msg) {
-    let message = "";
     logger.info(`${msg === "zue" ? 'lock' : 'unlock'} door`);
     let res = await toggleDoor(msg === "zue" ? 1 : 0);
-    if (Array.isArray(res.results)) {
-        message = "ok 😊";
-    } else if (res.results) {
-        message = `isch dänk scho ${msg}😝`;
-    } else {
-        message = "öpis isch nid guet😑";
-    };
-    return message;
+    return Array.isArray(res.results) ? "ok 😊" : res.results ? `isch dänk scho ${msg}😝` : "öpis isch nid guet😑"
 }
 
 async function setResetFeeders(msg) {

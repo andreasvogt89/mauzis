@@ -138,7 +138,7 @@ async function resetFeeders(tareNumber) {
                 .then(jsonResult => {
                     household.devices.forEach(device => {
                         if (device.id == device_id) {
-                            logger.info(jsonResult.results[0]);
+                            logger.info(JSON.stringify(jsonResult.results[0]));
                             result.push({ "bowl": device.name, "result": jsonResult.results[0].status });
                             return
                         }
