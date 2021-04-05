@@ -153,6 +153,38 @@ async function resetFeeders(tareNumber) {
     }
 }
 
+async function getChronik() {
+    let result = null;
+    await fetch("https://app.api.surehub.io/api/timeline/household/60617", {
+            "headers": {
+                "accept": "application/json, text/plain, */*",
+                "accept-language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+                "authorization": `Bearer ${loginData.token}`,
+                "if-none-match": "\"hKH93JDMi6VsTBAzU185l+kM4Tc=\"",
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "cross-site",
+                "sec-gpc": "1",
+                "x-app-version": "browser",
+                "x-device-id": "bde6c6fc80"
+            },
+            "referrer": "https://www.surepetcare.io/",
+            "referrerPolicy": "strict-origin-when-cross-origin",
+            "body": null,
+            "method": "GET",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(festchresult => festchresult.json())
+        .then(jsonResult => {
+            result = jsonResult;
+            household = jsonResult.data;
+        }).catch((err) => {
+            logger.error(err);
+            result = err
+        });
+    return result;
+}
+
 function getFeederIDs() {
     if (household) {
         let feederIDs = []
@@ -174,6 +206,7 @@ async function asyncForEach(array, callback) {
 
 module.exports = {
     getState,
+    getChronik,
     toggleDoor,
     startLoginPolling,
     resetFeeders,

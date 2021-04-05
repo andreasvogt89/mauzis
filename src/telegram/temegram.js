@@ -3,29 +3,27 @@ const { toggleDoor, resetFeeders } = require('../mauzis/petcare');
 const logger = require('../logger');
 const commands = new Map();
 const { Telegraf } = require('telegraf');
-
+const Household = require('../mauzis/Household');
 
 
 function iniTelegramBot() {
+    const houshold = new Household();
     commands.set("zue", setDoorState);
     commands.set("uf", setDoorState);
     commands.set("links", setResetFeeders)
     commands.set("rechts", setResetFeeders)
     commands.set("alle", setResetFeeders)
-        // Create a bot that uses 'polling' to fetch new updates
+    commands.set("status", houshold.getReport);
     const bot = new Telegraf(process.env.BOT_ID);
     bot.launch();
-
-    // Listen for any kind of message. There are different kinds of
-    // messages.
     bot.on('text', async(ctx) => {
         let answer = "";
         let text = ctx.message.text.toLocaleLowerCase();
         try {
-            let foo = commands.get(text);
-            answer = await foo(text);
+            answer = await commands.get(text)(text);
             ctx.reply(answer);
         } catch (e) {
+            logger.error("command error" + e);
             let commandsList = "";
             commands.forEach((val, key) => {
                 commandsList = commandsList + `${key}\n`
@@ -33,7 +31,13 @@ function iniTelegramBot() {
             ctx.reply(`${text} isch ke befehl, benutz:\n${commandsList}`);
         }
     });
-
+    setInterval(async() => {
+        let mes = await houshold.getUpdates();
+        mes.forEach(message => {
+            logger.info(message);
+            bot.telegram.sendMessage(process.env.CHAT_ID, message);
+        });
+    }, 3000);
 }
 
 async function setDoorState(msg) {
@@ -62,6 +66,7 @@ async function setResetFeeders(msg) {
     };
     return message;
 }
+
 module.exports = {
     iniTelegramBot
 }

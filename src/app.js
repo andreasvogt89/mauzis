@@ -16,7 +16,9 @@ if (process.env.NODE_ENV === 'production') {
     app.use(morgan('combined', {
         skip: function(req, res) { return res.statusCode < 400 }
     }));
-    app.use(express.static(__dirname + '/public/'));
+    app.get('/', async(req, res) => {
+        res.json(await getState());
+    });
 } else {
     app.use(morgan('dev'));
     app.get('/', async(req, res) => {
