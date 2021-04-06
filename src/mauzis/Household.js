@@ -71,7 +71,7 @@ class Household {
         const door = household.data.devices[4].status.locking.mode;
         const pets = household.data.pets.map(pet=>{
             let place = pet.status.activity.where;
-            return `${pet.name} ${place === 1 ? `at home 😊`: `isch dusse 🧐`}` 
+            return `${pet.name} ${place === 1 ? `is at home 😊`: `isch dusse 🧐`}` 
         }).join('\n');
         return `S törli isch ${door === 0 ? "offe" : "zue"}\n${pets}`
     }
