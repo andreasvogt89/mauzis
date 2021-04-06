@@ -1,5 +1,6 @@
 const { getState, getChronik } = require('./petcare');
 const logger = require('../logger');
+const { Console } = require('winston/lib/winston/transports');
 
 class Household {
 
@@ -20,7 +21,7 @@ class Household {
                 if (entry.type === 7) {
                     if (entry.movements[0].direction === 2) {
                         messages.push("Het äuä öper d Hang durs törli gha...")
-                    } else if (entry.movements[0].direction === 1) {
+                    } else {
                         messages.push("Es angers chätzli het id stube gluegt 😄")
                     }
                 }
@@ -33,11 +34,13 @@ class Household {
                     messages.push(newPlace);
                 }
                 let eaten = this.hasEaten(newhoushold.data.pets[i], pet);
+                logger.info(`Eat (${pet.name}): ${eaten}`);
                 if (eaten.length > 0) {
                     messages.concat(eaten);
                 }
             });
         }
+        logger.info("Messages: " + messages);
         this.household = newhoushold;
         return messages;
     }
@@ -45,7 +48,7 @@ class Household {
     hasPlaceChanged(pet, petBefore) {
             if (pet.status.activity.where !== petBefore.status.activity.where) {
                 let place = pet.status.activity.where;
-                return `${pet.name} ${place === 1 ? `at home, Hello ${pet.name} 😍`: `went out, stay safe ❤`}`
+                return `${pet.name} ${place === 1 ? `is at home, Hello ${pet.name} 😍`: `went out, stay safe ❤`}`
         }
     }
 

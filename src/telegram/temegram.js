@@ -37,7 +37,7 @@ function iniTelegramBot() {
             logger.info(message);
             bot.telegram.sendMessage(process.env.CHAT_ID, message);
         });
-    }, 3000);
+    }, 5000);
 }
 
 async function setDoorState(msg) {
