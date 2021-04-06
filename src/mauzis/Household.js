@@ -34,7 +34,7 @@ class Household {
                     messages.push(newPlace);
                 }
                 let eaten = this.hasEaten(newhoushold.data.pets[i], pet);
-                logger.info(`Eat (${pet.name}): ${eaten}`);
+                logger.info(`Eat (${pet.name}): ${eaten} ${eaten.length}`);
                 if (eaten.length > 0) {
                     messages.concat(eaten);
                 }
@@ -56,11 +56,11 @@ class Household {
         let feedings = []
         if (pet.status.feeding.change[0] !== petBefore.status.feeding.change[0]) {
             let ate = pet.status.feeding.change[0]
-            feedings.push(`${pet.name} het ${Math.round(ate)}g trochnigs ghaberet`);
+            feedings.push(`${pet.name} het ${date}g trochnigs ghaberet`);
         }
         if (pet.status.feeding.change[1] !== petBefore.status.feeding.change[1]) {
             let ate = pet.status.feeding.change[1]
-            feedings.push(`${pet.name} het ${Math.round(ate)}g nasses ghaberet`);
+            feedings.push(`${pet.name} het ${ate}g nasses ghaberet`);
         }
         return feedings;
     }
