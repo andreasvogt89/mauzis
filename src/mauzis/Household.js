@@ -1,6 +1,5 @@
 const { getState, getChronik } = require('./petcare');
 const logger = require('../logger');
-const { Console } = require('winston/lib/winston/transports');
 
 class Household {
 
@@ -34,14 +33,14 @@ class Household {
                     messages.push(newPlace);
                 }
                 let eaten = this.hasEaten(newhoushold.data.pets[i], pet);
-                console.log(eaten);
-                logger.info(`Eat (${pet.name}): ${eaten} ${eaten.length}`);
                 if (eaten.length > 0) {
-                    messages.concat(eaten);
+                    eaten.forEach(mes => {
+                        messages.push(mes);
+                    });
                 }
             });
         }
-        logger.info("Messages: " + messages);
+        logger.info("Messages befor return: " + messages);
         this.household = newhoushold;
         return messages;
     }
@@ -56,13 +55,20 @@ class Household {
     hasEaten(pet, petBefore){
         let feedings = []
         if (pet.status.feeding.change[0] !== petBefore.status.feeding.change[0]) {
-            let ate = pet.status.feeding.change[0]
-            feedings.push(`${pet.name} het ${ate}g trochnigs ghaberet`);
+            let ate = Math.floor(pet.status.feeding.change[0]) * -1;
+            if(ate > 0){
+                feedings.push(`${pet.name} het ${ate}g trochnigs ghaberet`);        
+            } else {
+                feedings.push(`${pet.name} het nur chli am trochnige gschnüfflet`);
+            }
         }
         if (pet.status.feeding.change[1] !== petBefore.status.feeding.change[1]) {
-            let ate = pet.status.feeding.change[1]
-            feedings.push(`${pet.name} het ${ate}g nasses ghaberet`);
-        }
+            let ate = Math.floor(pet.status.feeding.change[1])  * -1;
+            if(ate > 0){
+                feedings.push(`${pet.name} het ${ate}g nasses gfrämslet`);        
+            } else {
+                feedings.push(`${pet.name} het nur chli am nasse gschnüfflet`);
+            }}
         return feedings;
     }
 
