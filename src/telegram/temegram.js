@@ -8,6 +8,7 @@ const Household = require('../mauzis/Household');
 
 function iniTelegramBot() {
     const houshold = new Household();
+    houshold.inizialzie();
     commands.set("zue", setDoorState);
     commands.set("uf", setDoorState);
     commands.set("links", setResetFeeders)

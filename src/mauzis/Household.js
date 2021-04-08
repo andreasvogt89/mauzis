@@ -1,12 +1,28 @@
 const { getState, getChronik } = require('./petcare');
 const logger = require('../logger');
+const Pet = require('./Pet').default;
 
 class Household {
 
     constructor() {
         this.household = null;
+        this.pets = new Map();
         this.chronik = new Map();
         this.started_at = new Date().getTime();
+    }
+
+    async inizialzie() {
+        this.household = await getState();
+        this.household.data.pets.forEach(pet => {
+            let device = household.data.devices.find(device => { device.id === pet.status.feeding.device_id });
+            this.pets.set(pet.name, new Pet(
+                pet.name,
+                device.id,
+                device.name,
+                device.id.control.bowls.settings[0].target,
+                device.id.control.bowls.settings[1].target
+            ))
+        });
     }
 
     async getUpdates() {
@@ -15,7 +31,7 @@ class Household {
         let chronik = await getChronik();
         chronik.data.forEach(entry => {
             if (!this.chronik.has(entry.id) && new Date(entry.created_at).getTime() > this.started_at) {
-                console.log("New chronik entry: " + entry.type);
+                //console.log("New chronik entry: " + entry.type);
                 this.chronik.set(entry.id, entry);
                 if (entry.type === 7) {
                     if (entry.movements[0].direction === 2) {
@@ -23,6 +39,22 @@ class Household {
                     } else {
                         messages.push("Es angers chätzli het id stube gluegt 😄")
                     }
+                }
+                if (entry.type === 21) {
+                    let pet = null;
+                    this.pets.forEach((key, val) => {
+                        if (entry.devices[0].name === val.bowl_name) {
+                            pet = val;
+                        }
+                    });
+                    let str = "";
+                    entry.weights[0].frames.forEach(fill => {
+
+                    });
+                    let dry = entry.weights[0].frames[0];
+                    let wet = entry.weights[0].frames[1];
+                    messages.push(`${pet.bowl_name} wurde mit ${} befüllt.`);
+
                 }
             }
         });
