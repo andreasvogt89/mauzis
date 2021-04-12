@@ -41,19 +41,15 @@ class Household {
                     }
                 }
                 if (entry.type === 21) {
-                    let pet = null;
+                    let fill = null;
                     this.pets.forEach((key, val) => {
                         if (entry.devices[0].name === val.bowl_name) {
-                            pet = val;
-                        }
-                    });
-                    let str = "";
-                    entry.weights[0].frames.forEach(fill => {
 
+                        }
                     });
                     let dry = entry.weights[0].frames[0];
                     let wet = entry.weights[0].frames[1];
-                    messages.push(`${pet.bowl_name} wurde mit ${} befüllt.`);
+                    messages.push(`${key.bowl_name} wurde mit ${dry} befüllt.`);
 
                 }
             }
