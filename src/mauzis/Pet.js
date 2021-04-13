@@ -19,4 +19,4 @@ class Pet {
 
 }
 
-export default Pet;
+module.exports = Pet

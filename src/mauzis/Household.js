@@ -40,16 +40,15 @@ class Household {
                         messages.push("Es angers chätzli het id stube gluegt 😄")
                     }
                 }
+                //Filling
                 if (entry.type === 21) {
-                    let fill = null;
-                    this.pets.forEach((key, val) => {
-                        if (entry.devices[0].name === val.bowl_name) {
-
+                    this.pets.forEach((petName, pet) => {
+                        if (entry.devices[0].name === pet.bowl_name) {
+                            pet.bowl_current_dry = entry.weights[0].frames[0].current_weight;
+                            pet.bowl_current_wet = entry.weights[0].frames[1].current_weight;
+                            messages.push(`Added, Nass: ${pet.bowl_current_wet}g & Dry: ${pet.bowl_current_dry}g to ${pet.bowl_name}`)
                         }
                     });
-                    let dry = entry.weights[0].frames[0];
-                    let wet = entry.weights[0].frames[1];
-                    messages.push(`${key.bowl_name} wurde mit ${dry} befüllt.`);
 
                 }
             }
