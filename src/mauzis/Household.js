@@ -2,6 +2,7 @@ const { getState, getChronik } = require('./petcare');
 const logger = require('../logger');
 const Pet = require('./Pet').default;
 
+
 class Household {
 
     constructor() {
@@ -43,6 +44,7 @@ class Household {
                 //Filling
                 if (entry.type === 21) {
                     this.pets.forEach((petName, pet) => {
+                        console.log(pet);
                         if (entry.devices[0].name === pet.bowl_name) {
                             pet.bowl_current_dry = entry.weights[0].frames[0].current_weight;
                             pet.bowl_current_wet = entry.weights[0].frames[1].current_weight;
