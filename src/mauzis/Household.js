@@ -1,4 +1,4 @@
-const { getState, getChronik } = require('./petcare');
+const { getState, getChronik } = require('./PetCareAPI');
 const logger = require('../logger');
 const Pet = require('./Pet').default;
 

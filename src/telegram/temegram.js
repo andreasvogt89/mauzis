@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { toggleDoor, resetFeeders } = require('../mauzis/petcare');
+const { toggleDoor, resetFeeders } = require('../mauzis/PetCareAPI');
 const logger = require('../logger');
 const commands = new Map();
 const { Telegraf } = require('telegraf');
