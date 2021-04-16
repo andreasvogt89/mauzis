@@ -3,11 +3,7 @@ require('dotenv').config();
 
 class PetCareAPI {
 
-    constructor() {
-        this.loginData = null;
-    }
-
-    login() {
+    static login() {
         return fetch("https://app.api.surehub.io/api/auth/login", {
             "headers": {
                 "accept": "application/json, text/plain, */*",
@@ -29,11 +25,11 @@ class PetCareAPI {
         });
     }
 
-    getState() {
+    static getState(loginData) {
         return fetch("https://app.api.surehub.io/api/me/start", {
             "headers": {
                 "accept": "application/json, text/plain, */*",
-                "authorization": `Bearer ${this.loginData.token}`,
+                "authorization": `Bearer ${loginData.token}`,
                 "x-app-version": "browser",
             },
             "referrer": "https://www.surepetcare.io/",
@@ -42,14 +38,14 @@ class PetCareAPI {
             "method": "GET",
             "mode": "cors",
             "credentials": "include"
-        })
+        }).then(res => res.json())
     }
 
-    toggleDoor(bit) {
+    static toggleDoor(bit, loginData) {
         return fetch("https://app.api.surehub.io/api/device/553196/control", {
             "headers": {
                 "accept": "application/json, text/plain, */*",
-                "authorization": `Bearer ${this.loginData.token}`,
+                "authorization": `Bearer ${loginData.token}`,
                 "content-type": "application/json",
                 "x-app-version": "browser",
             },
@@ -58,10 +54,10 @@ class PetCareAPI {
             "body": `{\"locking\":${bit}}`,
             "method": "PUT",
             "mode": "cors"
-        });
+        }).then(res => res.json());
     }
 
-    resetFeeder(tareNumber, device_id) {
+    static resetFeeder(tareNumber, device_id, loginData) {
         fetch(`https://app.api.surehub.io/api/device/${device_id}/control`, {
             "headers": {
                 "accept": "application/json, text/plain, */*",
@@ -76,10 +72,10 @@ class PetCareAPI {
             "method": "PUT",
             "mode": "cors",
             "credentials": "include"
-        });
+        }).then(res => res.json());
     }
 
-    getChronik() {
+    static getChronik(loginData) {
         return fetch("https://app.api.surehub.io/api/timeline/household/60617", {
             "headers": {
                 "accept": "application/json, text/plain, */*",
@@ -99,7 +95,7 @@ class PetCareAPI {
             "method": "GET",
             "mode": "cors",
             "credentials": "include"
-        });
+        }).then(res => res.json());
     }
 }
 
