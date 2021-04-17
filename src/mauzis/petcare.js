@@ -44,21 +44,17 @@ class PetCare extends EventEmitter {
         return this.loginData && this.household ? true : false;
     }
 
-    async setDoorState(msg) {
-        let result = ""
+    setDoorState(msg) {
         this.emit('info', `set door state: ${msg}`);
         let bit = PetUtilities.getDoorCommand(msg);
-        await PetCareAPI.toggleDoor(bit, this.loginData).then(res => {
-            console.log(res);
-            result = Array.isArray(res.results) ? "ok 😊" : res.results ? `isch dänk scho ${PetUtilities.getDoorState(bit)}😝` : "öpis isch nid guet😑"
+        PetCareAPI.toggleDoor(bit, this.loginData).then(res => {
+            this.emit('message', Array.isArray(res.results) ? "ok 😊" : res.results ? `isch dänk scho ${PetUtilities.getDoorState(bit)}😝` : "öpis isch nid guet😑")
         }).catch(err => {
             this.emit('error', `set door state error: ${err}`);
         });
-        return result;
     }
 
-    async setResetFeeders(msg) {
-        let message = "";
+    resetFeeders(msg) {
         this.emit('info', `reset feeders ${msg}`);
         let getTareVal = (msg) => {
             if (msg === 'links') {
@@ -67,31 +63,29 @@ class PetCare extends EventEmitter {
                 return 2
             } else return 3
         }
-        let res = await resetFeeders(getTareVal(msg));
-        if (res.length > 0) {
-            res.forEach(device => {
-                message = message + `${device.bowl} ${device.result == 0 ? ' zrüggsetzt' : 'nid gange..' }` + "\n"
-            });
-        } else {
-            message = "öpis isch nid guet😑";
-        };
-        return message;
+        let pets = this.household.pets
+        Object.keys(pets).forEach((petName, pet) => {
+            PetCareAPI.resetFeeder(getTareVal(msg), pet.device, this.loginData)
+                .then(res => {
+                    console.log(res);
+                }).catch(err => {
+                    this.emit('error', `set door state error: ${err}`);
+                });
+        });
     }
 
     getRport() {
         let mes = `${this.household.name} isch ${this.household.doorState}\n***************************\n`
         let pets = this.household.pets
         Object.keys(pets).forEach(petName => {
-            mes = `${mes}${petName} isch ${pets[petName].place}\n` +
-                `-------Nass Status--------\n` +
-                `Aktuell: ${pets[petName].currentWet}\n` +
-                `Het: ${pets[petName].eatenWet}g gässe vo: ${pets[petName].lastFillWet}g \n` +
-                `-------Dry Status---------\n` +
-                `Aktuell: ${pets[petName].currentDry}g\n` +
-                `Het: ${pets[petName].eatenDry}g gässe vo: ${pets[petName].lastFillDry}g \n` +
+            mes = `${mes}${petName} isch ${pets[petName].place}${PetUtilities.getPlaceEmoij(pets[petName].place)}\n` +
+                `Nassfuetter:\n` +
+                `${pets[petName].eatenWet}g vo ${pets[petName].lastFillWet}g gässe, ${pets[petName].currentWet}g übrig \n` +
+                `Trochefuetter:\n` +
+                `${pets[petName].eatenDry}g vo ${pets[petName].lastFillDry}g gässe, ${pets[petName].currentDry}g übrig \n` +
                 `***************************\n`
         });
-        return mes;
+        this.emit('message', mes);
     }
 }
 module.exports = PetCare;

@@ -1,8 +1,8 @@
 class PetUtilities {
 
     static placeNames = {
-        OUT: "Dusse",
-        IN: "Dinne",
+        OUT: "dusse",
+        IN: "dinne",
     }
 
     static doorStates = {
@@ -21,6 +21,10 @@ class PetUtilities {
 
     static getPlace(bit) {
         return bit === 1 ? this.placeNames.IN : this.placeNames.OUT;
+    }
+
+    static getPlaceEmoij(stat) {
+        return stat === this.placeNames.OUT ? '🧐' : '😊';
     }
 
     static getDoorState(bit) {

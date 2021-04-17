@@ -1,5 +1,5 @@
 const logger = require('./logger');
-const PetCare = require('./mauzis/PetCare');
+const PetCare = require('./mauzis/Petcare');
 require('dotenv').config();
 const commands = new Map();
 const { Telegraf } = require('telegraf');
@@ -24,20 +24,19 @@ petcare.on("message", (mes) => {
     bot.telegram.sendMessage(process.env.CHAT_ID, mes);
 });
 
-commands.set("zue", (text) => { return petcare.setDoorState(text) });
-commands.set("uf", (text) => { return petcare.setDoorState(text) });
-/* 
-commands.set("links", setResetFeeders)
-commands.set("rechts", setResetFeeders)
-commands.set("alle", setResetFeeders)*/
+commands.set("zue", (text) => petcare.setDoorState(text));
+commands.set("uf", (text) => petcare.setDoorState(text));
+commands.set("links", (text) => petcare.resetFeeders(text));
+commands.set("rechts", (text) => petcare.resetFeeders(text));
+commands.set("alle", (text) => petcare.resetFeeders(text));
 commands.set("status", (text) => { return petcare.getRport(text) });
 
 bot.on('text', async(ctx) => {
-    let answer = "";
     let text = ctx.message.text.toLocaleLowerCase();
     try {
-        answer = await commands.get(text)(text);
-        ctx.reply(answer);
+        if (!text.startsWith('/')) {
+            commands.get(text)(text);
+        }
     } catch (e) {
         logger.error("command error" + e);
         let commandsList = "";
