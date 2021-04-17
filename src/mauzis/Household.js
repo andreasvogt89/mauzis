@@ -1,43 +1,52 @@
-const logger = require('../logger');
 const PetCareAPI = require('./PetCareAPI');
 const PetUtilities = require('./PetUtilities');
-const EventEmitter = require('events');
 
-class Household extends EventEmitter {
+class Household {
 
     constructor() {
-        super();
         this.household = null;
         this.name = null;
         this.doorState = null;
-        this.pets = new Map();
+        this.pets = {};
         this.chronik = new Map();
         this.started_at = new Date().getTime();
     }
 
     async inizialzie(loginData) {
         this.household = await PetCareAPI.getState(loginData);
-        let chronik = await PetCareAPI.getChronik(loginData);
-        let fillings = chronik.data.filter(entry => entry.type === 22);
+        let firstChronik = await PetCareAPI.getChronik(loginData);
+        let nextChronik = await PetCareAPI.getMoreChronik(loginData, firstChronik.data[firstChronik.data.length - 1].id);
+        let chronik = firstChronik.data.concat(nextChronik.data);
+        let lastEatings = chronik.filter(entry => entry.type === 22);
+        let lastFillings = chronik.filter(entry => entry.type === 21);
         this.name = this.household.data.households[0].name;
         this.doorState = PetUtilities.getDoorState(this.household.data.devices[4].status.locking.mode);
-        this.household.data.pets.forEach(pet => {
-            let device = this.household.data.devices.find(device => device.id == pet.status.feeding.device_id);
-            this.pets.set(pet.name, {
-                name: pet.name,
-                petID: pet.id,
+        this.household.data.pets.forEach($pet => {
+            let device = this.household.data.devices.find(device => device.id == $pet.status.feeding.device_id);
+            let lastEating = lastEatings.filter(e => e.pets[0].id === $pet.id)[0];
+            let lastFill = lastFillings.filter(f => f.devices[0].name === device.name)[0];
+            this.pets[$pet.name] = {
+                name: $pet.name,
+                petID: $pet.id,
                 device: device.id,
                 deviceName: device.name,
                 wetTarget: device.control.bowls.settings[0].target,
                 dryTarget: device.control.bowls.settings[1].target,
-                curretWet: fillings.filter(f => f.pets[0].id === pet.id)[0].weights[0].frames[0].current_weight,
-                currentDry: fillings.filter(f => f.pets[0].id === pet.id)[0].weights[0].frames[1].current_weight,
-                place: PetUtilities.getPlace(pet.status.activity.where),
-            });
+                currentDry: Math.round(lastEating.weights[0].frames[0].current_weight),
+                currentWet: Math.round(lastEating.weights[0].frames[1].current_weight),
+                lastEatenDry: Math.round(lastEating.weights[0].frames[0].change) * -1,
+                lastEatenWet: Math.round(lastEating.weights[0].frames[1].change) * -1,
+                lastFillDry: Math.round(lastFill.weights[0].frames[0].current_weight),
+                lastFillWet: Math.round(lastFill.weights[0].frames[1].current_weight),
+                place: PetUtilities.getPlace($pet.status.activity.where),
+            };
+            this.pets[$pet.name].eatenDry = this.pets[$pet.name].lastFillDry - this.pets[$pet.name].currentDry;
+            this.pets[$pet.name].eatenWet = this.pets[$pet.name].lastFillWet - this.pets[$pet.name].currentWet;
         });
     };
 
     async getUpdates(loginData) {
+        let updates = [];
         let newhousehold = await PetCareAPI.getState(loginData);
         this.doorState = PetUtilities.getDoorState(newhousehold.data.devices[4].status.locking.mode);
         let chronik = await PetCareAPI.getChronik(loginData);
@@ -47,39 +56,38 @@ class Household extends EventEmitter {
                 this.chronik.set(entry.id, entry);
                 if (entry.type === 7) {
                     if (entry.movements[0].direction === 2) {
-                        this.emit("message", "Het äuä öper d Hang durs törli gha...");
+                        updates.push("message", "Het äuä öper d Hang durs törli gha...");
                     } else {
-                        this.emit("message", "Es angers chätzli het id stube gluegt 😄")
+                        updates.push("message", "Es angers chätzli het id stube gluegt 😄")
                     }
                 }
                 //Filling
                 if (entry.type === 21) {
                     this.pets.forEach((petName, pet) => {
-                        if (entry.devices[0].name === pet.bowl_name) {
-                            pet.bowl_current_dry = entry.weights[0].frames[0].current_weight;
-                            pet.bowl_current_wet = entry.weights[0].frames[1].current_weight;
-                            this.emit("message", `Added, Nass: ${pet.bowl_current_wet}g & Dry: ${pet.bowl_current_dry}g to ${pet.bowl_name}`)
+                        if (entry.devices[0].name === pet.deviceName) {
+                            pet.currentWet = entry.weights[0].frames[0].current_weight;
+                            pet.currentDry = entry.weights[0].frames[1].current_weight;
+                            updates.push("message", `Added, Nass: ${pet.currentDryWet}g & Dry: ${pet.currentDry}g to ${pet.deviceName}`)
                         }
                     });
 
                 }
             }
         });
-        if (this.household) {
-            this.household.data.pets.forEach((pet, i) => {
-                let newPlace = this.hasPlaceChanged(newhousehold.data.pets[i], pet);
-                if (newPlace) {
-                    this.emit(newPlace);
-                }
-                let eaten = this.hasEaten(newhousehold.data.pets[i], pet);
-                if (eaten.length > 0) {
-                    eaten.forEach(mes => {
-                        this.emit(mes);
-                    });
-                }
-            });
-        }
+        this.household.data.pets.forEach((pet, i) => {
+            let newPlace = this.hasPlaceChanged(newhousehold.data.pets[i], pet);
+            if (newPlace) {
+                updates.push(newPlace);
+            }
+            let eaten = this.hasEaten(newhousehold.data.pets[i], pet);
+            if (eaten.length > 0) {
+                eaten.forEach(mes => {
+                    updates.push(mes);
+                });
+            }
+        });
         this.household = newhousehold;
+        return updates;
     }
 
     hasPlaceChanged(pet, petBefore) {
@@ -107,17 +115,6 @@ class Household extends EventEmitter {
                     feedings.push(`${pet.name} het nur chli am nasse gschnüfflet`);
                 }}
             return feedings;
-        }
-
-    async getReport(msg){
-            logger.info(`create ${msg} report`);
-            let household = await PetCareAPI.getState();
-            const door = household.data.devices[4].status.locking.mode;
-            const pets = household.data.pets.map(pet=>{
-                let place = pet.status.activity.where;
-                return `${pet.name} ${place === 1 ? `is at home 😊`: `isch dusse 🧐`}` 
-            }).join('\n');
-            return `S törli isch ${door === 0 ? "offe" : "zue"}\n${pets}`
         }
 }
 

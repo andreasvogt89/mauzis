@@ -22,7 +22,7 @@ class PetCareAPI {
             "method": "POST",
             "mode": "cors",
             "credentials": "omit"
-        });
+        }).then(res => res.json());
     }
 
     static getState(loginData) {
@@ -72,7 +72,7 @@ class PetCareAPI {
             "method": "PUT",
             "mode": "cors",
             "credentials": "include"
-        }).then(res => res.json());
+        });
     }
 
     static getChronik(loginData) {
@@ -97,6 +97,29 @@ class PetCareAPI {
             "credentials": "include"
         }).then(res => res.json());
     }
+
+    static getMoreChronik(loginData, before_id) {
+        return fetch(`https://app.api.surehub.io/api/timeline/household/60617?before_id=${before_id}`, {
+            "headers": {
+                "accept": "application/json, text/plain, */*",
+                "accept-language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+                "authorization": `Bearer ${loginData.token}`,
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "cross-site",
+                "sec-gpc": "1",
+                "x-app-version": "browser",
+                "x-device-id": "7c02b43db7"
+            },
+            "referrer": "https://www.surepetcare.io/",
+            "referrerPolicy": "strict-origin-when-cross-origin",
+            "body": null,
+            "method": "GET",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(res => res.json());
+    }
+
 }
 
 module.exports = PetCareAPI
