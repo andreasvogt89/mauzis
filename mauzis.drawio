@@ -1,1 +1,49 @@
-<mxfile host="app.diagrams.net" modified="2021-04-18T12:44:06.861Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.72 Safari/537.36" etag="-mVhlMbFEQJ_wZvyyWF4" version="14.4.9" type="device"><diagram id="3YcLcnav1BOcSG4xQ_2O" name="Page-1">5Vhdb9owFP01PA7FMQR4XCndHtaqElPXPprEEK8mzhynhP762djOl0OhCFZto1Lle+LPe869vkkPTtfFF47S+JZFmPZ8Lyp68Lrn+2Mwkv8VsNUABFADK04iDYEKmJNXbEDPoDmJcNboKBijgqRNMGRJgkPRwBDnbNPstmS0uWqKVtgB5iGiLvqDRCI2x/JHFf4Vk1VsVwbBRD9ZI9vZnCSLUcQ2NQjOenDKGRO6tS6mmCrfWb/ocTd7npYb4zgRxwwgi9l88XN0HS7v7mbfvE3y8Ovhk5nlBdHcHHiecyyReyxCpFq7rYut9YecU7peGlfyPKkCQ8pyucTVJiYCz1MUKnAjxSCxWKyptIBsLgmlU0YZ380Dl0P1p6YRnD3j2pNg91MjWCJquP7phbUjPWU8y43GZg1zGMwFLvZ6CZS+l5rFbI0F38ouZkBg2DJy9aGxNxX5wDIa14gfGwwZva3KmStKZMOw8g6GfIchl5Mk+qykviMDZRkJm66XR+fbR+WwfjC09tPOngwmFrgujEu1ta1b95gTeRzMu7z+fmYzgbhwt7yDbwgt910Q8Wi3IdtPtXa1W2XYzWrX4MiJ6Rb90n0s5yF+w+8mTcktrbA4FEGunGp6GXbIxWIcUyTIS3O7XRoyK9wzIg9SqhWAQUOuMGjJUB/TjKonh9ZE/qSl+1FrIu0HZ6KdpMtjn65y2KHygAolihQlsr1S7VuUv5LMPllwi1tELl3v7gQKZ3kS4cjI60DC2p9mzpfKzpCwwLDJHLRXU02Bow4FBvBCCStwqPyOKV5xtHaJC2Mk/guWSgpKltx7Jehgqbxrzk7T+F33SsIS3HL8fjfuc3ydnfJOAn3PHzQvJW8UnHIpHZ/8Dyb14COTuqMVeGJSh2D49kQXTuqTIyRWlpMH4hxlqS7vl6RQueFvCXwIJq3A953AH3ZI6UJRb1/HzlRO+s1y8kDU/uGqURa3g3rl2PdKu7t6VMbpSeVsFeXHJh/g99tZY3RiTTkOmjWltQ+kH0kx2ta6papDdny+tHYVJ3rGs+a2wRtVjnfF3KrmX39xLr/YbFv2Bd6cpVl9N9GMVh+f4Ow3</diagram></mxfile>
+<mxfile>
+    <diagram id="3YcLcnav1BOcSG4xQ_2O" name="Page-1">
+        <mxGraphModel dx="770" dy="262" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="2" value="" style="whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#999999;fillColor=#CCCCCC;" vertex="1" parent="1">
+                    <mxGeometry x="50" y="170" width="320" height="320" as="geometry"/>
+                </mxCell>
+                <mxCell id="ibESbj7DcfNNEL0wnVqV-1" value="Sure Petcare" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;strokeColor=#666666;fontColor=#333333;shadow=0;sketch=1;fillColor=#9999FF;" parent="1" vertex="1">
+                    <mxGeometry x="60" y="230" width="120" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="ibESbj7DcfNNEL0wnVqV-2" value="" style="endArrow=classic;html=1;entryX=0.65;entryY=0.949;entryDx=0;entryDy=0;entryPerimeter=0;sketch=1;fillColor=#f5f5f5;strokeColor=#666666;startArrow=classic;startFill=1;exitX=0;exitY=0;exitDx=0;exitDy=0;" parent="1" source="ibESbj7DcfNNEL0wnVqV-3" target="ibESbj7DcfNNEL0wnVqV-1" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="114" y="360" as="sourcePoint"/>
+                        <mxPoint x="290" y="270" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="ibESbj7DcfNNEL0wnVqV-3" value="&lt;span&gt;Mauzis&lt;br&gt;&lt;/span&gt;" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;sketch=1;strokeColor=#666666;fontColor=#333333;fillColor=#9999FF;" parent="1" vertex="1">
+                    <mxGeometry x="150" y="327" width="70" height="63" as="geometry"/>
+                </mxCell>
+                <mxCell id="ibESbj7DcfNNEL0wnVqV-6" value="Telegram&lt;br&gt;chat" style="rounded=1;whiteSpace=wrap;html=1;shadow=0;sketch=1;strokeColor=#666666;fontColor=#333333;fillColor=#9999FF;" parent="1" vertex="1">
+                    <mxGeometry x="270" y="320" width="60" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="ibESbj7DcfNNEL0wnVqV-8" value="" style="endArrow=none;html=1;strokeColor=#666666;fillColor=#f5f5f5;sketch=1;entryX=1.024;entryY=0.076;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" target="ibESbj7DcfNNEL0wnVqV-6" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="270" y="330" as="sourcePoint"/>
+                        <mxPoint x="315" y="330" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="ibESbj7DcfNNEL0wnVqV-9" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;shadow=0;sketch=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;" parent="1" vertex="1">
+                    <mxGeometry x="319" y="322" width="5" height="5" as="geometry"/>
+                </mxCell>
+                <mxCell id="ibESbj7DcfNNEL0wnVqV-17" value="" style="endArrow=classic;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;sketch=1;fillColor=#f5f5f5;strokeColor=#666666;startArrow=classic;startFill=1;exitX=0.944;exitY=0.044;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="ibESbj7DcfNNEL0wnVqV-3" target="ibESbj7DcfNNEL0wnVqV-6" edge="1">
+                    <mxGeometry width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="212.5" y="337" as="sourcePoint"/>
+                        <mxPoint x="286" y="286" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="270" y="270"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="ibESbj7DcfNNEL0wnVqV-4" value="Telegram Bot" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;strokeColor=#666666;fontColor=#333333;shadow=0;sketch=1;fillColor=#9999FF;" parent="1" vertex="1">
+                    <mxGeometry x="210" y="210" width="120" height="80" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
