@@ -3,7 +3,7 @@
   
   ## Not finished yet!
   
-  <img src="./mauzis.png">
+  <svg src="./mauzis.drawio">
   
   
 ## Features
