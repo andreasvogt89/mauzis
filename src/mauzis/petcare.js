@@ -54,6 +54,18 @@ class PetCare extends EventEmitter {
         });
     }
 
+    newPetPlace(msg) {
+        this.emit('info', `set pet place: ${msg}`);
+        let pet = this.household.pets[msg.split(' ')[0].charAt(0).toUpperCase() + msg.split(' ')[0].slice(1)];
+        let place = PetUtilities.getPetPlaceCommand(msg.split(' ')[1]);
+        PetCareAPI.setPetPlace(pet.petID, place, this.loginData).then(res => {
+            this.emit('info', JSON.stringify(res));
+            this.emit('message', res.data ? "ok 😊" : "öpis isch nid guet😑");
+        }).catch(err => {
+            this.emit('error', `set pet place error: ${err}`);
+        });
+    }
+
     resetFeeders(msg) {
         this.emit('info', `reset feeders ${msg}`);
         let getTareVal = (msg) => {
@@ -63,11 +75,11 @@ class PetCare extends EventEmitter {
                 return 2
             } else return 3
         }
-        let pets = this.household.pets
-        Object.keys(pets).forEach((petName, pet) => {
-            PetCareAPI.resetFeeder(getTareVal(msg), pet.device, this.loginData)
+        let pets = this.household.pets;
+        Object.keys(pets).forEach((petName) => {
+            PetCareAPI.resetFeeder(getTareVal(msg), pets[petName].device, this.loginData)
                 .then(res => {
-                    console.log(res);
+                    this.emit('message', `${pets[petName].deviceName}: ${JSON.stringify(res)}`);
                 }).catch(err => {
                     this.emit('error', `set door state error: ${err}`);
                 });

@@ -58,7 +58,7 @@ class PetCareAPI {
     }
 
     static resetFeeder(tareNumber, device_id, loginData) {
-        fetch(`https://app.api.surehub.io/api/device/${device_id}/control`, {
+        return fetch(`https://app.api.surehub.io/api/device/${device_id}/control`, {
             "headers": {
                 "accept": "application/json, text/plain, */*",
                 "authorization": `Bearer ${loginData.token}`,
@@ -72,7 +72,7 @@ class PetCareAPI {
             "method": "PUT",
             "mode": "cors",
             "credentials": "include"
-        });
+        }).then(res => res.json());
     }
 
     static getChronik(loginData) {
@@ -120,6 +120,28 @@ class PetCareAPI {
         }).then(res => res.json());
     }
 
+    static setPetPlace(petID, whereBit, loginData) {
+        return fetch(`https://app.api.surehub.io/api/pet/${petID}/position`, {
+            "headers": {
+                "accept": "application/json, text/plain, */*",
+                "accept-language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+                "authorization": `Bearer ${loginData.token}`,
+                "content-type": "application/json",
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "cross-site",
+                "sec-gpc": "1",
+                "x-app-version": "browser",
+                "x-device-id": "81df2ec2b5"
+            },
+            "referrer": "https://www.surepetcare.io/",
+            "referrerPolicy": "strict-origin-when-cross-origin",
+            "body": `{\"where\":${whereBit},\"since\":\"${new Date().toISOString().replace("T"," ").slice(0, -5)}\"}`,
+            "method": "POST",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(res => res.json());
+    }
 }
 
 module.exports = PetCareAPI

@@ -19,6 +19,10 @@ class PetUtilities {
         return mes === this.placeCommands.CLOSE ? 1 : 0
     }
 
+    static getPetPlaceCommand(place) {
+        return place === this.placeNames.IN ? 1 : 2;
+    }
+
     static getPlace(bit) {
         return bit === 1 ? this.placeNames.IN : this.placeNames.OUT;
     }
