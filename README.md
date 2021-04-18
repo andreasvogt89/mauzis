@@ -10,7 +10,7 @@
 - [x] create connection to sure petcare with auto login interval
 - [x] create Telegram bot and conncet to chat
 - [x] get updates of whereabouts of all pets
-- [x] get updates of eating habits of all pets in chat (partly done)
+- [x] get updates of eating habits of all pets (partly done)
 - [x] set pet door state
 - [x] set pet whereabout
 - [x] reset feeders (left/right/all)
