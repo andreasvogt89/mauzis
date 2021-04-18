@@ -3,7 +3,7 @@
   
   ## Not finished yet!
   
-  <svg src="./mauzis.drawio">
+  <img src="./mauzis.png">
   
   
 ## Features
@@ -17,8 +17,7 @@
 - [x] get report of feeding activty
 
 
-------------------------------------------------------------------------------
-```
+
 Copy in Unraid (Domain specific)
 ```
 cp /boot/config/plugins/dockerMAn/templates-user/my-Mauzis.xml /boot/config/plugins/community.applications/private/myrepo
