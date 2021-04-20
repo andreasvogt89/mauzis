@@ -107,8 +107,11 @@ class PetCare extends EventEmitter {
 
     getDeviceRport() {
         let mes = '\n***************************\n'
-        this.household.devices.forEach(device => {
-            `${mes}${device.name}:${device.status.battery}\n`
+        let devices = this.household.devices;
+        Object.keys(devices).forEach(device => {
+            if (devices[device].status.battery) {
+                mes = `${mes}${device}: ${devices[device].status.battery}\n`
+            }
         });
         this.emit('message', mes);
     }
