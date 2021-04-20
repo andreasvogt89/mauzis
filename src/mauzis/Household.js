@@ -1,4 +1,3 @@
-const { Console } = require('winston/lib/winston/transports');
 const PetCareAPI = require('./PetCareAPI');
 const PetUtilities = require('./PetUtilities');
 
@@ -50,7 +49,7 @@ class Household {
 
     async getUpdates(loginData) {
         let updates = [];
-        if (this.lastUpdate) {
+        if (!this.lastUpdate) {
             this.lastUpdate = this.started_at
         }
         let newhousehold = await PetCareAPI.getState(loginData);
@@ -81,7 +80,7 @@ class Household {
                             this.pets[petName].lastFillWet = wet;
                             this.pets[petName].eatenDry = 0;
                             this.pets[petName].eatenWet = 0;
-                            updates.push(`Added, Nass: ${pet.currentDryWet}g & Dry: ${pet.currentDry}g to ${pet.deviceName}`)
+                            updates.push(`Added, Nass: ${this.pets[petName].currentDryWet}g & Dry: ${this.pets[petName].currentDry}g to ${this.pets[petName].deviceName}`)
                         }
                     });
                 }
@@ -93,9 +92,9 @@ class Household {
                             let wet = Math.round(entry.weights[0].frames[1].current_weight);
                             this.pets[petName].currentWet = wet;
                             this.pets[petName].currentDry = dry;
-                            this.pets[petName].eatenDry = pet.lastFillDry - dry;
-                            this.pets[petName].eatenWet = pet.lastFillWet - wet;
-                            //updates.push(`${petName} het Nass: ${pet.currentDryWet}g & Dry: ${pet.currentDry}g to ${pet.deviceName}`)
+                            this.pets[petName].eatenDry = this.pets[petName].lastFillDry - dry;
+                            this.pets[petName].eatenWet = this.pets[petName].lastFillWet - wet;
+                            //updates.push(`${this.pets[petName].petName} het Nass: ${this.pets[petName].currentDryWet}g & Dry: ${this.pets[petName].currentDry}g to ${this.pets[petName].deviceName}`)
                         }
                     });
                 }
