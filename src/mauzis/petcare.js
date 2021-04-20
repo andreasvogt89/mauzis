@@ -57,13 +57,18 @@ class PetCare extends EventEmitter {
     newPetPlace(msg) {
         this.emit('info', `set pet place: ${msg}`);
         let pet = this.household.pets[msg.split(' ')[0].charAt(0).toUpperCase() + msg.split(' ')[0].slice(1)];
-        let place = PetUtilities.getPetPlaceCommand(msg.split(' ')[1]);
-        PetCareAPI.setPetPlace(pet.petID, place, this.loginData).then(res => {
-            this.emit('info', JSON.stringify(res));
-            this.emit('message', res.data ? "ok 😊" : "öpis isch nid guet😑");
-        }).catch(err => {
-            this.emit('error', `set pet place error: ${err}`);
-        });
+        if (pet.place === msg.split(' ')[1]) {
+            this.emit('message', `${pet.name} isch dänk scho ${msg.split(' ')[1]}🙄`);
+        } else {
+            let placeInBit = PetUtilities.getPetPlaceCommand(msg.split(' ')[1]);
+            PetCareAPI.setPetPlace(pet.petID, placeInBit, this.loginData).then(res => {
+                this.emit('info', JSON.stringify(res));
+                this.emit('message', res.data ? "ok 😊" : "öpis isch nid guet😑");
+                this.household.pets[pet.name].place = msg.split(' ')[1];
+            }).catch(err => {
+                this.emit('error', `set pet place error: ${err}`);
+            });
+        }
     }
 
     resetFeeders(msg) {
@@ -86,7 +91,7 @@ class PetCare extends EventEmitter {
         });
     }
 
-    getRport() {
+    getPetRport() {
         let mes = `${this.household.name} isch ${this.household.doorState}\n***************************\n`
         let pets = this.household.pets
         Object.keys(pets).forEach(petName => {
@@ -96,6 +101,14 @@ class PetCare extends EventEmitter {
                 `Trochefuetter:\n` +
                 `${pets[petName].eatenDry}g vo ${pets[petName].lastFillDry}g gässe, ${pets[petName].currentDry}g übrig \n` +
                 `***************************\n`
+        });
+        this.emit('message', mes);
+    }
+
+    getDeviceRport() {
+        let mes = '\n***************************\n'
+        this.household.devices.forEach(device => {
+            `${mes}${device.name}:${device.status.battery}\n`
         });
         this.emit('message', mes);
     }

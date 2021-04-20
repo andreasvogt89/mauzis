@@ -8,6 +8,7 @@ class Household {
         this.name = null;
         this.doorState = null;
         this.pets = {};
+        this.devices = {};
         this.chronik = new Map();
         this.started_at = new Date().getTime();
     }
@@ -24,16 +25,17 @@ class Household {
         this.name = this.$household.data.households[0].name;
         this.doorState = PetUtilities.getDoorState(this.$household.data.devices[4].status.locking.mode);
         this.$household.data.pets.forEach($pet => {
-            let device = this.$household.data.devices.find(device => device.id == $pet.status.feeding.device_id);
+            let $device = this.$household.data.devices.find(device => device.id == $pet.status.feeding.device_id);
+            this.devices[$device.name] = $device;
             let lastEating = lastEatings.filter(e => e.pets[0].id === $pet.id)[0];
-            let lastFill = lastFillings.filter(f => f.devices[0].name === device.name)[0];
+            let lastFill = lastFillings.filter(f => f.devices[0].name === $device.name)[0];
             this.pets[$pet.name] = {
                 name: $pet.name,
                 petID: $pet.id,
-                device: device.id,
-                deviceName: device.name,
-                wetTarget: device.control.bowls.settings[0].target,
-                dryTarget: device.control.bowls.settings[1].target,
+                device: $device.id,
+                deviceName: $device.name,
+                wetTarget: $device.control.bowls.settings[0].target,
+                dryTarget: $device.control.bowls.settings[1].target,
                 currentDry: Math.round(lastEating.weights[0].frames[0].current_weight),
                 currentWet: Math.round(lastEating.weights[0].frames[1].current_weight),
                 lastEatenDry: Math.round(lastEating.weights[0].frames[0].change) * -1,
@@ -110,6 +112,10 @@ class Household {
                 updates.push(eaten);
             }
         });
+        this.$household.data.devices.forEach(device => {
+            this.isBatteryLow(device);
+            this.devices[device.name] = device;
+        });
         this.$household = newhousehold;
         this.lastUpdate = new Date().getTime();
         return updates;
@@ -118,10 +124,19 @@ class Household {
     hasPlaceChanged(pet, petBefore) {
             if (pet.status.activity.where !== petBefore.status.activity.where) {
                 let place = pet.status.activity.where;
+                this.pets[pet.name].place = PetUtilities.getPlace(place);
                 return `${pet.name} ${place === 1 ? `is at home, Hello ${pet.name} 😍`: `went out, stay safe ❤`}`
             }
         }
-
+    
+    isBatteryLow(device){
+        if (device.status.battery && device.status.battery < 1) {
+            let place = pet.status.activity.where;
+            this.pets[pet.name].place = PetUtilities.getPlace(place);
+            return `${pet.name} ${place === 1 ? `is at home, Hello ${pet.name} 😍`: `went out, stay safe ❤`}`
+        }
+    }
+    
     hasEaten(pet, petBefore){
             let feedings = null;
             if (pet.status.feeding.change[0] !== petBefore.status.feeding.change[0]) {
