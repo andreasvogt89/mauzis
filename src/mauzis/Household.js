@@ -15,13 +15,9 @@ class Household {
 
     async inizialzie(loginData) {
         this.$household = await PetCareAPI.getState(loginData);
-        let firstChronik = await PetCareAPI.getChronik(loginData);
-        let nextChronik = await PetCareAPI.getMoreChronik(loginData, firstChronik.data[firstChronik.data.length - 1].id);
-        let chronik = firstChronik.data.concat(nextChronik.data);
-        nextChronik = await PetCareAPI.getMoreChronik(loginData, chronik[chronik.length - 1].id);
-        chronik = chronik.concat(nextChronik.data);
-        let lastEatings = chronik.filter(entry => entry.type === 22);
-        let lastFillings = chronik.filter(entry => entry.type === 21);
+        let timeline = await this.getTodaysTimeline(loginData);
+        let lastEatings = timeline.filter(entry => entry.type === 22);
+        let lastFillings = timeline.filter(entry => entry.type === 21);
         this.name = this.$household.data.households[0].name;
         this.doorState = PetUtilities.getDoorState(this.$household.data.devices[4].status.locking.mode);
         this.$household.data.pets.forEach($pet => {
@@ -49,6 +45,25 @@ class Household {
         });
     };
 
+    async getTodaysTimeline(loginData) {
+        let now = new Date();
+        let startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        let timeline = [];
+        let firstload = await PetCareAPI.getTimeline(loginData);
+        timeline = timeline.concat(firstload.data);
+        let lastEntry = new Date(timeline[timeline.length - 1].updated_at).getTime();
+        while (startOfDay.getTime() < lastEntry) {
+            let load = await PetCareAPI.getMoreTimeline(loginData, timeline[timeline.length - 1].id);
+            load.data.forEach(entry => {
+                if (startOfDay.getTime() < new Date(entry.updated_at).getTime()) {
+                    timeline.push(entry);
+                }
+            });
+            lastEntry = new Date(load.data[load.data.length - 1].updated_at).getTime();
+        }
+        return timeline;
+    }
+
     async getUpdates(loginData) {
         let updates = [];
         if (!this.lastUpdate) {
@@ -56,7 +71,7 @@ class Household {
         }
         let newhousehold = await PetCareAPI.getState(loginData);
         this.doorState = PetUtilities.getDoorState(newhousehold.data.devices[4].status.locking.mode);
-        let chronik = await PetCareAPI.getChronik(loginData);
+        let chronik = await PetCareAPI.getTimeline(loginData);
         chronik.data.forEach(entry => {
             if (new Date(entry.created_at).getTime() > this.lastUpdate) {
                 console.log("New chronik entry: " + entry.type);

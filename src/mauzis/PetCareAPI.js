@@ -75,7 +75,7 @@ class PetCareAPI {
         }).then(res => res.json());
     }
 
-    static getChronik(loginData) {
+    static getTimeline(loginData) {
         return fetch("https://app.api.surehub.io/api/timeline/household/60617", {
             "headers": {
                 "accept": "application/json, text/plain, */*",
@@ -98,7 +98,7 @@ class PetCareAPI {
         }).then(res => res.json());
     }
 
-    static getMoreChronik(loginData, before_id) {
+    static getMoreTimeline(loginData, before_id) {
         return fetch(`https://app.api.surehub.io/api/timeline/household/60617?before_id=${before_id}`, {
             "headers": {
                 "accept": "application/json, text/plain, */*",
