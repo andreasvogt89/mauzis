@@ -145,11 +145,7 @@ class Household {
         }
     
     isBatteryLow(device){
-        if (device.status.battery && device.status.battery < 1) {
-            let place = pet.status.activity.where;
-            this.pets[pet.name].place = PetUtilities.getPlace(place);
-            return `${pet.name} ${place === 1 ? `is at home, Hello ${pet.name} 😍`: `went out, stay safe ❤`}`
-        }
+        return (device.status.battery && device.status.battery) < 1
     }
     
     hasEaten(pet, petBefore){
