@@ -18,7 +18,15 @@ class PetCare extends EventEmitter {
                 this.emit('info', "next in 12h");
                 this.loginData = json.data;
                 this.household = new Household();
-                this.household.inizialzie(this.loginData).catch(err => {
+                this.household.inizialzie(this.loginData).then(() => {
+                    setInterval(() => {
+                        this.household.getUpdates(this.loginData).then(updates => {
+                            updates.forEach(update => {
+                                this.emit('message', update);
+                            });
+                        });
+                    }, 10000);
+                }).catch(err => {
                     this.emit('error', `Household failed: ${err}`);
                 });
             }).catch((err) => {
@@ -34,13 +42,6 @@ class PetCare extends EventEmitter {
                     this.emit('error', `Login Petcare failed: ${err}`)
                 });
         }, 12 * 3600 * 1000);
-        setInterval(() => {
-            this.household.getUpdates(this.loginData).then(updates => {
-                updates.forEach(update => {
-                    this.emit('message', update);
-                });
-            });
-        }, 10000);
         return this.loginData && this.household ? true : false;
     }
 
