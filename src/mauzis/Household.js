@@ -41,12 +41,18 @@ class Household {
                 currentWet: Math.round(eating[eating.length - 1].weights[0].frames[1].current_weight),
                 lastEatenDry: Math.round(eating[eating.length - 1].weights[0].frames[0].change) * -1,
                 lastEatenWet: Math.round(eating[eating.length - 1].weights[0].frames[1].change) * -1,
+                dryEatenSoFar: this.getEatingsFromToday(eating, 0),
+                wetEatenSoFar: this.getEatingsFromToday(eating, 0),
                 lastFillDry: Math.round(filling[filling.length - 1].weights[0].frames[0].current_weight),
                 lastFillWet: Math.round(filling[filling.length - 1].weights[0].frames[1].current_weight),
+                fillWetToday: this.getFillingsFromToday(filling, 1),
+                fillDryToday: this.getFillingsFromToday(filling, 0),
                 place: PetUtilities.getPlace($pet.status.activity.where),
             };
             this.pets[$pet.name].eatenDry = this.pets[$pet.name].lastFillDry - this.pets[$pet.name].currentDry;
             this.pets[$pet.name].eatenWet = this.pets[$pet.name].lastFillWet - this.pets[$pet.name].currentWet;
+            console.log(`${$pet.name} : ${this.pets[$pet.name].dryEatenSoFar}`);
+            console.log(`${$pet.name} : ${this.pets[$pet.name].wetEatenSoFar}`);
         });
     };
 
@@ -67,6 +73,20 @@ class Household {
             lastEntry = new Date(load.data[load.data.length - 1].updated_at).getTime();
         }
         return timeline;
+
+
+    }
+
+    getFillingsFromToday(filling, id) {
+        return filling.reduce((acu, fill) => {
+            return acu + Math.round(fill.weights[0].frames[id].current_weight)
+        }, 0);
+    }
+
+    getEatingsFromToday(eating, id) {
+        return eating.reduce((acu, meal) => {
+            return acu + Math.round(meal.weights[0].frames[id].change) * -1
+        }, 0);
     }
 
     async getUpdates(loginData) {
