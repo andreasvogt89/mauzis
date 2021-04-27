@@ -29,7 +29,6 @@ class Household {
             this.devices[$device.name] = $device;
             let eating = eatings.filter(e => e.pets[0].id === $pet.id);
             let filling = fillings.filter(f => f.devices[0].name === $device.name);
-            //TODO: add all filling & eating from today 
             this.pets[$pet.name] = {
                 name: $pet.name,
                 petID: $pet.id,
@@ -41,8 +40,8 @@ class Household {
                 currentWet: Math.round(eating[eating.length - 1].weights[0].frames[1].current_weight),
                 lastEatenDry: Math.round(eating[eating.length - 1].weights[0].frames[0].change) * -1,
                 lastEatenWet: Math.round(eating[eating.length - 1].weights[0].frames[1].change) * -1,
-                dryEatenSoFar: this.getEatingsFromToday(eating, 0),
-                wetEatenSoFar: this.getEatingsFromToday(eating, 0),
+                eatenDrySoFar: this.getEatingsFromToday(eating, 0),
+                eatenWetSoFar: this.getEatingsFromToday(eating, 1),
                 lastFillDry: Math.round(filling[filling.length - 1].weights[0].frames[0].current_weight),
                 lastFillWet: Math.round(filling[filling.length - 1].weights[0].frames[1].current_weight),
                 fillWetToday: this.getFillingsFromToday(filling, 1),
@@ -51,8 +50,6 @@ class Household {
             };
             this.pets[$pet.name].eatenDry = this.pets[$pet.name].lastFillDry - this.pets[$pet.name].currentDry;
             this.pets[$pet.name].eatenWet = this.pets[$pet.name].lastFillWet - this.pets[$pet.name].currentWet;
-            console.log(`${$pet.name} : ${this.pets[$pet.name].dryEatenSoFar}`);
-            console.log(`${$pet.name} : ${this.pets[$pet.name].wetEatenSoFar}`);
         });
     };
 
@@ -106,12 +103,24 @@ class Household {
                 if (entry.type === 21)
                     Object.keys(this.pets).forEach(petName => {
                         if (entry.devices[0].name === this.pets[petName].deviceName) {
+                            let newFillDate = new Date().toLocaleDateString();
+                            let isFirstFilling = this.pets[petName].lastFillDate !== newFillDate;
+                            this.pets[petName].lastFillDate = newFillDate;
                             let dry = Math.round(entry.weights[0].frames[0].current_weight);
                             let wet = Math.round(entry.weights[0].frames[1].current_weight);
                             this.pets[petName].currentWet = wet;
                             this.pets[petName].currentDry = dry;
                             this.pets[petName].lastFillDry = dry;
                             this.pets[petName].lastFillWet = wet;
+                            if (isFirstFilling) {
+                                this.pets[petName].fillDryToday = 0;
+                                this.pets[petName].fillWetToday = 0;
+                                this.pets[petName].eatenDrySoFar = 0;
+                                this.pets[petName].eatenWetSoFar = 0;
+                            } else {
+                                this.pets[petName].fillDryToday += dry;
+                                this.pets[petName].fillWetToday += wet;
+                            }
                             this.pets[petName].eatenDry = 0;
                             this.pets[petName].eatenWet = 0;
                             updates.push(`Füllig vo ${this.pets[petName].deviceName}\n Nass: ${this.pets[petName].currentWet}g & Troche: ${this.pets[petName].currentDry}g`)
@@ -122,13 +131,17 @@ class Household {
                 if (entry.type === 22)
                     Object.keys(this.pets).forEach(petName => {
                         if (entry.devices[0].name === this.pets[petName].deviceName) {
-                            let dry = Math.round(entry.weights[0].frames[0].current_weight);
-                            let wet = Math.round(entry.weights[0].frames[1].current_weight);
-                            this.pets[petName].currentWet = wet;
-                            this.pets[petName].currentDry = dry;
-                            this.pets[petName].eatenDry = this.pets[petName].lastFillDry - dry;
-                            this.pets[petName].eatenWet = this.pets[petName].lastFillWet - wet;
-                            updates.push(`${this.pets[petName].name} het gässe 🥫\n ${this.pets[petName].eatenWet}g Nass & ${this.pets[petName].eatenDry}g Troche`)
+                            let currentDry = Math.round(entry.weights[0].frames[0].current_weight);
+                            let currentWet = Math.round(entry.weights[0].frames[1].current_weight);
+                            let dry = Math.round(entry.weights[0].frames[0].change) * -1;
+                            let wet = Math.round(entry.weights[0].frames[1].change) * -1
+                            this.pets[petName].currentWet = currentWet;
+                            this.pets[petName].currentDry = currentDry;
+                            this.pets[petName].eatenDry = this.pets[petName].lastFillDry - currentDry;
+                            this.pets[petName].eatenWet = this.pets[petName].lastFillWet - currentWet;
+                            this.pets[petName].eatenDrySoFar += this.pets[petName].lastFillDry - currentDry;
+                            this.pets[petName].eatenWetSoFar += this.pets[petName].lastFillWet - currentWet;
+                            updates.push(`${this.pets[petName].name} het gässe 🥫\n ${wet}g Nass & ${dry}g Troche`)
                         }
                     });
             }

@@ -36,7 +36,8 @@ class PetUtilities {
     }
 
     static movementPhrase(petName, bit) {
-        return bit === 1 ? `${petName} isch jetz dinne, Hello ${petName} 😍` : `${petName} isch use, stay safe ❤️`
+        return bit === 1 ? `${petName} isch jetz dinne, Hello ${petName} 😍` :
+            bit === 2 ? `${petName} isch use, stay safe ❤️` : `${petName} het dürs törli gluegt👀`
     }
 
     static unknownMovmentPhrase(bit) {
