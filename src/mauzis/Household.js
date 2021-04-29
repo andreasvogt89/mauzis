@@ -113,8 +113,8 @@ class Household {
                             this.pets[petName].lastFillDry = dry;
                             this.pets[petName].lastFillWet = wet;
                             if (isFirstFilling) {
-                                this.pets[petName].fillDryToday = 0;
-                                this.pets[petName].fillWetToday = 0;
+                                this.pets[petName].fillDryToday = dry;
+                                this.pets[petName].fillWetToday = wet;
                                 this.pets[petName].eatenDrySoFar = 0;
                                 this.pets[petName].eatenWetSoFar = 0;
                             } else {
@@ -142,6 +142,18 @@ class Household {
                             this.pets[petName].eatenDrySoFar += this.pets[petName].lastFillDry - currentDry;
                             this.pets[petName].eatenWetSoFar += this.pets[petName].lastFillWet - currentWet;
                             updates.push(`${this.pets[petName].name} het gässe 🥫\n ${wet}g Nass & ${dry}g Troche`)
+                        }
+                    });
+                //Reset Feeder
+                if (entry.type === 24)
+                    Object.keys(this.pets).forEach(petName => {
+                        if (entry.devices[0].name === this.pets[petName].deviceName) {
+                            let tare = PetUtilities.getTareText(JSON.parse(entry.data).tare_type)
+                            let currentDry = Math.round(entry.weights[0].frames[0].current_weight);
+                            let currentWet = Math.round(entry.weights[0].frames[1].current_weight);
+                            this.pets[petName].currentWet = currentWet;
+                            this.pets[petName].currentDry = currentDry;
+                            updates.push(`${this.pets[petName].deviceName}  ${tare} zrüggsetzt!`)
                         }
                     });
             }

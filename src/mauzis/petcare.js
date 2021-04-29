@@ -74,16 +74,9 @@ class PetCare extends EventEmitter {
 
     resetFeeders(msg) {
         this.emit('info', `reset feeders ${msg}`);
-        let getTareVal = (msg) => {
-            if (msg === 'links') {
-                return 1
-            } else if (msg === 'rechts') {
-                return 2
-            } else return 3
-        }
         let pets = this.household.pets;
         Object.keys(pets).forEach((petName) => {
-            PetCareAPI.resetFeeder(getTareVal(msg), pets[petName].device, this.loginData)
+            PetCareAPI.resetFeeder(PetUtilities.getTareVale(msg), pets[petName].device, this.loginData)
                 .then(res => {
                     this.emit('message', `${pets[petName].deviceName}: ${JSON.stringify(res)}`);
                 }).catch(err => {
