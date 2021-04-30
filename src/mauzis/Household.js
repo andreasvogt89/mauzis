@@ -95,12 +95,15 @@ class Household {
             if (!this.usedTimelineIds.has(entry.id)) {
                 this.usedTimelineIds.set(entry.id, entry.created_at);
                 //Door things
-                if (entry.type === 0)
+                if (entry.type === 0) {
+                    this.pets[entry.pets[0].name].place = PetUtilities.getPlace(entry.movements[0].direction);
                     updates.push(PetUtilities.movementPhrase(entry.pets[0].name, entry.movements[0].direction));
-                if (entry.type === 7)
+                }
+                if (entry.type === 7) {
                     updates.push(PetUtilities.unknownMovmentPhrase(entry.movements[0].direction));
+                }
                 //Filling
-                if (entry.type === 21)
+                if (entry.type === 21) {
                     Object.keys(this.pets).forEach(petName => {
                         if (entry.devices[0].name === this.pets[petName].deviceName) {
                             let newFillDate = new Date().toLocaleDateString();
@@ -126,9 +129,9 @@ class Household {
                             updates.push(`Füllig vo ${this.pets[petName].deviceName}\n Nass: ${this.pets[petName].currentWet}g & Troche: ${this.pets[petName].currentDry}g`)
                         }
                     });
-
+                }
                 //Eating
-                if (entry.type === 22)
+                if (entry.type === 22) {
                     Object.keys(this.pets).forEach(petName => {
                         if (entry.devices[0].name === this.pets[petName].deviceName) {
                             let currentDry = Math.round(entry.weights[0].frames[0].current_weight);
@@ -144,8 +147,9 @@ class Household {
                             updates.push(`${this.pets[petName].name} het gässe 🥫\n ${wet}g Nass & ${dry}g Troche`)
                         }
                     });
+                }
                 //Reset Feeder
-                if (entry.type === 24)
+                if (entry.type === 24) {
                     Object.keys(this.pets).forEach(petName => {
                         if (entry.devices[0].name === this.pets[petName].deviceName) {
                             let tare = PetUtilities.getTareText(JSON.parse(entry.data).tare_type)
@@ -153,9 +157,11 @@ class Household {
                             let currentWet = Math.round(entry.weights[0].frames[1].current_weight);
                             this.pets[petName].currentWet = currentWet;
                             this.pets[petName].currentDry = currentDry;
-                            updates.push(`${this.pets[petName].deviceName}  ${tare} zrüggsetzt!`)
+                            // Message is comming from response of requests
+                            //updates.push(`${this.pets[petName].deviceName}  ${tare} zrüggsetzt!`)
                         }
                     });
+                }
             }
             this.removeOldTimlineEntries();
         });
@@ -169,6 +175,7 @@ class Household {
                 newMap.set(key, val);
             }
         });
+        this.usedTimelineIds = newMap;
     }
 }
 

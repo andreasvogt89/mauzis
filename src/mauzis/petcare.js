@@ -2,6 +2,7 @@ const PetCareAPI = require('./PetCareAPI');
 const Household = require('./Household');
 const EventEmitter = require('events');
 const PetUtilities = require('./PetUtilities');
+const e = require('express');
 
 class PetCare extends EventEmitter {
 
@@ -78,7 +79,11 @@ class PetCare extends EventEmitter {
         Object.keys(pets).forEach((petName) => {
             PetCareAPI.resetFeeder(PetUtilities.getTareVal(msg), pets[petName].device, this.loginData)
                 .then(res => {
-                    this.emit('message', `${pets[petName].deviceName}: ${JSON.stringify(res)}`);
+                    if (res.results) {
+                        this.emit('message', `${pets[petName].deviceName}:\n${PetUtilities.getTareText(res.results[0].data.tare)} zrüggsetzt`);
+                    } else {
+                        this.emit('message', `${pets[petName].deviceName}:\n Hmm öbis isch nid guet 🤕`);
+                    }
                 }).catch(err => {
                     this.emit('error', `set door state error: ${err}`);
                 });
