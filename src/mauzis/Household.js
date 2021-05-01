@@ -169,13 +169,12 @@ class Household {
     }
 
     removeOldTimlineEntries() {
-        let newMap = new Map();
         this.usedTimelineIds.forEach((val, key) => {
-            if (new Date(val).toLocaleDateString() === new Date().toLocaleDateString()) {
-                newMap.set(key, val);
+            if (new Date(val).toLocaleDateString() !== new Date().toLocaleDateString()) {
+                console.log(`Delete: ${val}`);
+                this.usedTimelineIds.delete(key);
             }
         });
-        this.usedTimelineIds = newMap;
     }
 }
 

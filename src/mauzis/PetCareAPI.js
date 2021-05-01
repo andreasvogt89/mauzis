@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const logger = require('../logger');
 require('dotenv').config();
 
 class PetCareAPI {
@@ -22,7 +23,7 @@ class PetCareAPI {
             "method": "POST",
             "mode": "cors",
             "credentials": "omit"
-        }).then(res => res.json());
+        }).then(res => res.json()).catch(err => logger.error(err));
     }
 
     static getState(loginData) {
@@ -38,7 +39,7 @@ class PetCareAPI {
             "method": "GET",
             "mode": "cors",
             "credentials": "include"
-        }).then(res => res.json())
+        }).then(res => res.json()).catch(err => logger.error(err));
     }
 
     static toggleDoor(bit, loginData) {
@@ -54,7 +55,7 @@ class PetCareAPI {
             "body": `{\"locking\":${bit}}`,
             "method": "PUT",
             "mode": "cors"
-        }).then(res => res.json());
+        }).then(res => res.json()).catch(err => logger.error(err));;
     }
 
     static resetFeeder(tareNumber, device_id, loginData) {
@@ -72,7 +73,7 @@ class PetCareAPI {
             "method": "PUT",
             "mode": "cors",
             "credentials": "include"
-        }).then(res => res.json());
+        }).then(res => res.json()).catch(err => logger.error(err));
     }
 
     static getTimeline(loginData) {
@@ -95,7 +96,7 @@ class PetCareAPI {
             "method": "GET",
             "mode": "cors",
             "credentials": "include"
-        }).then(res => res.json());
+        }).then(res => res.json()).catch(err => logger.error(err));
     }
 
     static getMoreTimeline(loginData, before_id) {
@@ -117,7 +118,7 @@ class PetCareAPI {
             "method": "GET",
             "mode": "cors",
             "credentials": "include"
-        }).then(res => res.json());
+        }).then(res => res.json()).catch(err => logger.error(err));
     }
 
     static setPetPlace(petID, whereBit, loginData) {
@@ -140,7 +141,7 @@ class PetCareAPI {
             "method": "POST",
             "mode": "cors",
             "credentials": "include"
-        }).then(res => res.json());
+        }).then(res => res.json()).catch(err => logger.error(err));
     }
 }
 
