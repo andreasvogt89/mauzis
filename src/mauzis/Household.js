@@ -170,7 +170,7 @@ class Household {
 
     removeOldTimlineEntries() {
         this.usedTimelineIds.forEach((val, key) => {
-            if (new Date(val).toLocaleDateString() !== new Date().toLocaleDateString()) {
+            if (new Date(val).toLocaleDateString().split('.')[1] !== new Date().toLocaleDateString().split('.')[1]) {
                 console.log(`Delete: ${val}`);
                 this.usedTimelineIds.delete(key);
             }
