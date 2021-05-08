@@ -9,7 +9,6 @@ bot.launch();
 const petcare = new PetCare();
 petcare.start();
 
-
 petcare.on("info", (info) => {
     logger.info(info);
 });
@@ -24,38 +23,32 @@ petcare.on("message", (mes) => {
     bot.telegram.sendMessage(process.env.CHAT_ID, mes);
 });
 
-const commands = new Map();
-commands.set("zue", (text) => petcare.setDoorState(text));
-commands.set("uf", (text) => petcare.setDoorState(text));
-commands.set("links", (text) => petcare.resetFeeders(text));
-commands.set("rechts", (text) => petcare.resetFeeders(text));
-commands.set("alle", (text) => petcare.resetFeeders(text));
-commands.set("status", (text) => petcare.getPetRport(text));
-commands.set("grät", (text) => petcare.getDeviceRport(text));
-commands.set("pan dinne", (text) => petcare.newPetPlace(text));
-commands.set("pan dusse", (text) => petcare.newPetPlace(text));
-commands.set("nika dinne", (text) => petcare.newPetPlace(text));
-commands.set("nika dusse", (text) => petcare.newPetPlace(text));
-commands.set("minou dinne", (text) => petcare.newPetPlace(text));
-commands.set("minou dusse", (text) => petcare.newPetPlace(text));
+bot.command('1', () => petcare.setDoorState('zue'));
+bot.command('2', () => petcare.setDoorState('uf'));
+bot.command('3', () => petcare.resetFeeders('links'));
+bot.command('4', () => petcare.resetFeeders('rechts'));
+bot.command('5', () => petcare.resetFeeders('alle'));
+bot.command('6', () => petcare.getPetRport('status'));
+bot.command('7', () => petcare.getDeviceRport('grät'));
+bot.command('8', () => petcare.newPetPlace('pan dinne'));
+bot.command('9', () => petcare.newPetPlace('pan dusse'));
+bot.command('10', () => petcare.newPetPlace('nika dinne'));
+bot.command('11', () => petcare.newPetPlace('nika dusse'));
+bot.command('12', () => petcare.newPetPlace('minou dinne'));
+bot.command('13', () => petcare.newPetPlace('minou dusse'));
 
-bot.on('text', async(ctx) => {
-    let text = ctx.message.text.toLocaleLowerCase();
-    try {
-
-        if (!text.startsWith('/')) {
-            commands.get(text)(text);
-        }
-    } catch (e) {
-        logger.error("command error" + e);
-        let commandsList = "";
-        commands.forEach((val, key) => {
-            commandsList = commandsList + `${key}\n`
-        });
-        ctx.reply(`${text} isch ke befehl, benutz:\n${commandsList}`);
-    }
-});
-
-bot.on('error', (err) => {
-    logger.error(err);
-});
+/*
+1 - Törli zue  
+2 - Törli uf
+3 - Aui Schäli links zrüg 
+4 - Aui Schäli rechts zrüg 
+5 - Aui schäli beidi site zrüg 
+6 - Gib status 
+7 - Batterie Grätlis
+8 - Set Pan dinne
+9 - Set Pan dusse
+10 - Set Nika dinne
+11 - Set Nika dusse
+12 - Set Minou dinne
+13 - Set Minou dusse
+*/
