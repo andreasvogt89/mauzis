@@ -2,6 +2,7 @@ const PetCareAPI = require('./PetCareAPI');
 const Household = require('./Household');
 const EventEmitter = require('events');
 const PetUtilities = require('./PetUtilities');
+const e = require('express');
 
 class PetCare extends EventEmitter {
 
@@ -18,7 +19,15 @@ class PetCare extends EventEmitter {
                 this.emit('info', "next in 12h");
                 this.loginData = json.data;
                 this.household = new Household();
-                this.household.inizialzie(this.loginData).catch(err => {
+                this.household.inizialzie(this.loginData).then(() => {
+                    setInterval(() => {
+                        this.household.getUpdates(this.loginData).then(updates => {
+                            updates.forEach(update => {
+                                this.emit('message', update);
+                            });
+                        });
+                    }, 10000);
+                }).catch(err => {
                     this.emit('error', `Household failed: ${err}`);
                 });
             }).catch((err) => {
@@ -34,13 +43,6 @@ class PetCare extends EventEmitter {
                     this.emit('error', `Login Petcare failed: ${err}`)
                 });
         }, 12 * 3600 * 1000);
-        setInterval(() => {
-            this.household.getUpdates(this.loginData).then(updates => {
-                updates.forEach(update => {
-                    this.emit('message', update);
-                });
-            });
-        }, 10000);
         return this.loginData && this.household ? true : false;
     }
 
@@ -73,18 +75,15 @@ class PetCare extends EventEmitter {
 
     resetFeeders(msg) {
         this.emit('info', `reset feeders ${msg}`);
-        let getTareVal = (msg) => {
-            if (msg === 'links') {
-                return 1
-            } else if (msg === 'rechts') {
-                return 2
-            } else return 3
-        }
         let pets = this.household.pets;
         Object.keys(pets).forEach((petName) => {
-            PetCareAPI.resetFeeder(getTareVal(msg), pets[petName].device, this.loginData)
+            PetCareAPI.resetFeeder(PetUtilities.getTareVal(msg), pets[petName].device, this.loginData)
                 .then(res => {
-                    this.emit('message', `${pets[petName].deviceName}: ${JSON.stringify(res)}`);
+                    if (res.results) {
+                        this.emit('message', `${pets[petName].deviceName}:\n${PetUtilities.getTareText(res.results[0].data.tare)} zrüggsetzt`);
+                    } else {
+                        this.emit('message', `${pets[petName].deviceName}:\n Hmm öbis isch nid guet 🤕`);
+                    }
                 }).catch(err => {
                     this.emit('error', `set door state error: ${err}`);
                 });
@@ -96,10 +95,12 @@ class PetCare extends EventEmitter {
         let pets = this.household.pets
         Object.keys(pets).forEach(petName => {
             mes = `${mes}${petName} isch ${pets[petName].place}${PetUtilities.getPlaceEmoij(pets[petName].place)}\n` +
-                `Nassfuetter:\n` +
+                `Nass:\n` +
                 `${pets[petName].eatenWet}g vo ${pets[petName].lastFillWet}g gässe, ${pets[petName].currentWet}g übrig \n` +
-                `Trochefuetter:\n` +
+                `Gsamt ${pets[petName].eatenWetSoFar}g vo ${pets[petName].fillWetToday}g gässe\n` +
+                `Troche:\n` +
                 `${pets[petName].eatenDry}g vo ${pets[petName].lastFillDry}g gässe, ${pets[petName].currentDry}g übrig \n` +
+                `Gsamt ${pets[petName].eatenDrySoFar}g vo ${pets[petName].fillDryToday}g gässe\n` +
                 `***************************\n`
         });
         this.emit('message', mes);
