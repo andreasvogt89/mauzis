@@ -52,11 +52,11 @@ class Household {
         let now = new Date();
         let startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         let timeline = [];
-        let firstload = await PetCareAPI.getTimeline(loginData);
+        let firstload = await PetCareAPI.getTimeline(this.$household.data.households[0].id, loginData);
         timeline = timeline.concat(firstload.data);
         let lastEntry = new Date(timeline[timeline.length - 1].updated_at).getTime();
         while (startOfDay.getTime() < lastEntry) {
-            let load = await PetCareAPI.getMoreTimeline(loginData, timeline[timeline.length - 1].id);
+            let load = await PetCareAPI.getMoreTimeline(this.$household.data.households[0].id, loginData, timeline[timeline.length - 1].id);
             load.data.forEach(entry => {
                 if (startOfDay.getTime() < new Date(entry.updated_at).getTime()) {
                     timeline.push(entry);
@@ -84,7 +84,7 @@ class Household {
     async getUpdates(loginData) {
         let updates = [];
         this.$household = await PetCareAPI.getState(loginData);
-        let newTimeline = await PetCareAPI.getTimeline(loginData);
+        let newTimeline = await PetCareAPI.getTimeline(this.$household.data.households[0].id, loginData);
         newTimeline.data.forEach(entry => {
             if (!this.usedTimelineIds.has(entry.id)) {
                 this.usedTimelineIds.set(entry.id, entry.created_at);

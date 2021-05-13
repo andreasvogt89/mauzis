@@ -99,8 +99,8 @@ class PetCareAPI {
         }).then(res => res.json()).catch(err => logger.error(err));
     }
 
-    static getTimeline(loginData) {
-        return fetch("https://app.api.surehub.io/api/timeline/household/60617", {
+    static getTimeline(house_id, loginData) {
+        return fetch(`https://app.api.surehub.io/api/timeline/household/${house_id}`, {
             "headers": {
                 "accept": "application/json, text/plain, */*",
                 "accept-language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
@@ -122,8 +122,8 @@ class PetCareAPI {
         }).then(res => res.json()).catch(err => logger.error(err));
     }
 
-    static getMoreTimeline(loginData, before_id) {
-        return fetch(`https://app.api.surehub.io/api/timeline/household/60617?before_id=${before_id}`, {
+    static getMoreTimeline(house_id, loginData, before_id) {
+        return fetch(`https://app.api.surehub.io/api/timeline/household/${house_id}?before_id=${before_id}`, {
             "headers": {
                 "accept": "application/json, text/plain, */*",
                 "accept-language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
