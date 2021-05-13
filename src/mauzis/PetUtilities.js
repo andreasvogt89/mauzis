@@ -1,22 +1,42 @@
 class PetUtilities {
 
-    static placeNames = {
-        OUT: "dusse",
-        INSIDE: "dinne",
-    }
+    static somethingWrongMsg = "öpis isch nid guet😑";
+
+    static successMsg = "ok 😊";
+
+    static doorAlready = (command) => `isch dänk scho ${PetUtilities.doorStates[command]}😝`
+
+    static petIsAlready = (command) => `isch dänk scho ${PetUtilities.placeNames[command]}🙄`
 
     static doorStates = {
-        OPEN: "offe",
-        CLOSED: "zue",
+        0: "offe",
+        1: "zue",
     }
 
-    static placeCommands = {
-        CLOSE: "zue",
-        OPEN: "uf",
+    static placeNames = {
+        1: "dinne",
+        2: "dusse",
     }
 
-    static getDoorCommand(mes) {
-        return mes === this.placeCommands.CLOSE ? 1 : 0
+    static doorCommands = {
+        OPEN: 0,
+        CLOSE: 1,
+    }
+
+    static petPlaceCommands = {
+        INSIDE: 1,
+        OUTSIDE: 2
+    }
+
+    static products = {
+        HUB: 1,
+        REPEATER: 2,
+        DOOR: 3,
+        FEEDER: 4,
+        PROGRAMMER: 5,
+        DOOR_SMALL: 6,
+        FEEDER_LITE: 7,
+        FELQUA: 8,
     }
 
     static getTareVal(msg) {
@@ -27,21 +47,7 @@ class PetUtilities {
         return bit === 1 ? 'links' : bit === 2 ? 'rechts' : 'beidi';
     }
 
-    static getPetPlaceCommand(place) {
-        return place === this.placeNames.INSIDE ? 1 : 2;
-    }
-
-    static getPlace(bit) {
-        return bit === 1 ? this.placeNames.INSIDE : this.placeNames.OUT;
-    }
-
-    static getPlaceEmoij(stat) {
-        return stat === this.placeNames.OUT ? '🧐' : '😊';
-    }
-
-    static getDoorState(bit) {
-        return bit === 1 ? this.doorStates.CLOSED : this.doorStates.OPEN;
-    }
+    static getPlaceEmoij = (stat) => stat === PetUtilities.placeNames[2] ? '🧐' : '😊';
 
     static movementPhrase(petName, bit) {
         return bit === 1 ? `${petName} isch jetz dinne, Hello ${petName} 😍` :

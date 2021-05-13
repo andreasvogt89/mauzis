@@ -19,11 +19,34 @@ class PetCareAPI {
             },
             "referrer": "https://www.surepetcare.io/",
             "referrerPolicy": "strict-origin-when-cross-origin",
-            "body": `{\"email_address\":\"${process.env.MAIL}\",\"password\":\"${process.env.PASSWORD}\",\"device_id\":\"${process.env.DEVICE_ID}\"}`,
+            "body": `{\"email_address\":\"${process.env.MAIL}\",\"password\":\"${process.env.PASSWORD}\",\"device_id\":\"${null}\"}`,
             "method": "POST",
             "mode": "cors",
             "credentials": "omit"
         }).then(res => res.json()).catch(err => logger.error(err));
+    }
+
+    static getMetaData(loginData) {
+        return fetch("https://app.api.surehub.io/api/start", {
+            "headers": {
+                "accept": "application/json, text/plain, */*",
+                "accept-language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+                "authorization": `Bearer ${loginData.token}`,
+                "cache-control": "no-cache",
+                "pragma": "no-cache",
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "cross-site",
+                "sec-gpc": "1",
+                "x-app-version": "browser",
+            },
+            "referrer": "https://www.surepetcare.io/",
+            "referrerPolicy": "strict-origin-when-cross-origin",
+            "body": null,
+            "method": "GET",
+            "mode": "cors",
+            "credentials": "include"
+        }).then(res => res.json()).catch(err => logger.error(err));;
     }
 
     static getState(loginData) {
@@ -42,8 +65,8 @@ class PetCareAPI {
         }).then(res => res.json()).catch(err => logger.error(err));
     }
 
-    static toggleDoor(bit, loginData) {
-        return fetch("https://app.api.surehub.io/api/device/553196/control", {
+    static toggleDoor(doorId, command, loginData) {
+        return fetch(`https://app.api.surehub.io/api/device/${doorId}/control`, {
             "headers": {
                 "accept": "application/json, text/plain, */*",
                 "authorization": `Bearer ${loginData.token}`,
@@ -52,7 +75,7 @@ class PetCareAPI {
             },
             "referrer": "https://www.surepetcare.io/",
             "referrerPolicy": "strict-origin-when-cross-origin",
-            "body": `{\"locking\":${bit}}`,
+            "body": `{\"locking\":${command}}`,
             "method": "PUT",
             "mode": "cors"
         }).then(res => res.json()).catch(err => logger.error(err));;

@@ -1,6 +1,7 @@
 const logger = require('./logger');
 const PetCare = require('./mauzis/PetCare');
 const { Telegraf } = require('telegraf');
+const PetUtilities = require('./mauzis/PetUtilities');
 require('dotenv').config();
 
 const bot = new Telegraf(process.env.BOT_ID);
@@ -23,19 +24,19 @@ petcare.on("message", (mes) => {
     bot.telegram.sendMessage(process.env.CHAT_ID, mes);
 });
 
-bot.command('1', () => petcare.setDoorState('zue'));
-bot.command('2', () => petcare.setDoorState('uf'));
+bot.command('1', () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.CLOSE));
+bot.command('2', () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.OPEN));
 bot.command('3', () => petcare.resetFeeders('links'));
 bot.command('4', () => petcare.resetFeeders('rechts'));
 bot.command('5', () => petcare.resetFeeders('alle'));
-bot.command('6', () => petcare.getPetRport('status'));
-bot.command('7', () => petcare.getDeviceRport('grät'));
-bot.command('8', () => petcare.newPetPlace('pan dinne'));
-bot.command('9', () => petcare.newPetPlace('pan dusse'));
-bot.command('10', () => petcare.newPetPlace('nika dinne'));
-bot.command('11', () => petcare.newPetPlace('nika dusse'));
-bot.command('12', () => petcare.newPetPlace('minou dinne'));
-bot.command('13', () => petcare.newPetPlace('minou dusse'));
+bot.command('6', () => petcare.getPetRport());
+bot.command('7', () => petcare.getDeviceRport());
+bot.command('8', () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.INSIDE));
+bot.command('9', () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.OUTSIDE));
+bot.command('10', () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.INSIDE));
+bot.command('11', () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.OUTSIDE));
+bot.command('12', () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.INSIDE));
+bot.command('13', () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.OUTSIDE));
 
 /*
 1 - Törli zue  

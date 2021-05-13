@@ -1,4 +1,3 @@
-const e = require('express');
 const PetCareAPI = require('./PetCareAPI');
 const PetUtilities = require('./PetUtilities');
 
@@ -6,10 +5,7 @@ class Household {
 
     constructor() {
         this.$household = null;
-        this.name = null;
-        this.doorState = null;
         this.pets = {};
-        this.devices = {};
         this.usedTimelineIds = new Map();
         this.started_at = new Date().getTime();
     }
@@ -22,34 +18,33 @@ class Household {
         });
         let eatings = timeline.filter(entry => entry.type === 22);
         let fillings = timeline.filter(entry => entry.type === 21);
-        this.name = this.$household.data.households[0].name;
-        this.doorState = PetUtilities.getDoorState(this.$household.data.devices[4].status.locking.mode);
         this.$household.data.pets.forEach($pet => {
-            let $device = this.$household.data.devices.find(device => device.id == $pet.status.feeding.device_id);
-            this.devices[$device.name] = $device;
-            let eating = eatings.filter(e => e.pets[0].id === $pet.id);
-            let filling = fillings.filter(f => f.devices[0].name === $device.name);
-            this.pets[$pet.name] = {
-                name: $pet.name,
-                petID: $pet.id,
-                device: $device.id,
-                deviceName: $device.name,
-                wetTarget: $device.control.bowls.settings[0].target,
-                dryTarget: $device.control.bowls.settings[1].target,
-                currentDry: Math.round(eating[eating.length - 1].weights[0].frames[0].current_weight),
-                currentWet: Math.round(eating[eating.length - 1].weights[0].frames[1].current_weight),
-                lastEatenDry: Math.round(eating[eating.length - 1].weights[0].frames[0].change) * -1,
-                lastEatenWet: Math.round(eating[eating.length - 1].weights[0].frames[1].change) * -1,
-                eatenDrySoFar: this.getEatingsFromToday(eating, 0),
-                eatenWetSoFar: this.getEatingsFromToday(eating, 1),
-                lastFillDry: Math.round(filling[filling.length - 1].weights[0].frames[0].current_weight),
-                lastFillWet: Math.round(filling[filling.length - 1].weights[0].frames[1].current_weight),
-                fillWetToday: this.getFillingsFromToday(filling, 1),
-                fillDryToday: this.getFillingsFromToday(filling, 0),
-                place: PetUtilities.getPlace($pet.status.activity.where),
-            };
-            this.pets[$pet.name].eatenDry = this.pets[$pet.name].lastFillDry - this.pets[$pet.name].currentDry;
-            this.pets[$pet.name].eatenWet = this.pets[$pet.name].lastFillWet - this.pets[$pet.name].currentWet;
+            if ($pet.status.feeding) {
+                let $device = this.$household.data.devices.find(device => device.id == $pet.status.feeding.device_id);
+                let eating = eatings.filter(e => e.pets[0].id === $pet.id);
+                let filling = fillings.filter(f => f.devices[0].name === $device.name);
+                this.pets[$pet.name] = {
+                    name: $pet.name,
+                    petID: $pet.id,
+                    device: $device.id,
+                    deviceName: $device.name,
+                    wetTarget: $device.control.bowls.settings[0].target,
+                    dryTarget: $device.control.bowls.settings[1].target,
+                    currentDry: Math.round(eating[eating.length - 1].weights[0].frames[0].current_weight),
+                    currentWet: Math.round(eating[eating.length - 1].weights[0].frames[1].current_weight),
+                    lastEatenDry: Math.round(eating[eating.length - 1].weights[0].frames[0].change) * -1,
+                    lastEatenWet: Math.round(eating[eating.length - 1].weights[0].frames[1].change) * -1,
+                    eatenDrySoFar: this.getEatingsFromToday(eating, 0),
+                    eatenWetSoFar: this.getEatingsFromToday(eating, 1),
+                    lastFillDry: Math.round(filling[filling.length - 1].weights[0].frames[0].current_weight),
+                    lastFillWet: Math.round(filling[filling.length - 1].weights[0].frames[1].current_weight),
+                    fillWetToday: this.getFillingsFromToday(filling, 1),
+                    fillDryToday: this.getFillingsFromToday(filling, 0),
+                    place: PetUtilities.placeNames[$pet.status.activity.where],
+                };
+                this.pets[$pet.name].eatenDry = this.pets[$pet.name].lastFillDry - this.pets[$pet.name].currentDry;
+                this.pets[$pet.name].eatenWet = this.pets[$pet.name].lastFillWet - this.pets[$pet.name].currentWet;
+            }
         });
     };
 
@@ -88,20 +83,19 @@ class Household {
 
     async getUpdates(loginData) {
         let updates = [];
-        let newhousehold = await PetCareAPI.getState(loginData);
-        this.doorState = PetUtilities.getDoorState(newhousehold.data.devices[4].status.locking.mode);
+        this.$household = await PetCareAPI.getState(loginData);
         let newTimeline = await PetCareAPI.getTimeline(loginData);
         newTimeline.data.forEach(entry => {
             if (!this.usedTimelineIds.has(entry.id)) {
                 this.usedTimelineIds.set(entry.id, entry.created_at);
                 //Door things
                 if (entry.type === 0) {
-                    this.pets[entry.pets[0].name].place = PetUtilities.getPlace(entry.movements[0].direction);
                     updates.push(PetUtilities.movementPhrase(entry.pets[0].name, entry.movements[0].direction));
                 }
                 if (entry.type === 7) {
                     updates.push(PetUtilities.unknownMovmentPhrase(entry.movements[0].direction));
                 }
+
                 //Filling
                 if (entry.type === 21) {
                     Object.keys(this.pets).forEach(petName => {
@@ -157,8 +151,6 @@ class Household {
                             let currentWet = Math.round(entry.weights[0].frames[1].current_weight);
                             this.pets[petName].currentWet = currentWet;
                             this.pets[petName].currentDry = currentDry;
-                            // Message is comming from response of requests
-                            //updates.push(`${this.pets[petName].deviceName}  ${tare} zrüggsetzt!`)
                         }
                     });
                 }
@@ -171,7 +163,7 @@ class Household {
     removeOldTimlineEntries() {
         this.usedTimelineIds.forEach((val, key) => {
             if (new Date(val).toLocaleDateString().split('.')[1] !== new Date().toLocaleDateString().split('.')[1]) {
-                console.log(`Delete: ${val}`);
+                this.emit('info', `Delete: ${val}`);
                 this.usedTimelineIds.delete(key);
             }
         });
