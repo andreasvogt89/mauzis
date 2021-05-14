@@ -24,24 +24,32 @@ petcare.on("message", (mes) => {
     bot.telegram.sendMessage(process.env.CHAT_ID, mes);
 });
 
-bot.command('1', () => petcare.setDoorState('Küchenklappe', PetUtilities.doorCommands.CLOSE));
-bot.command('2', () => petcare.setDoorState('Küchenklappe', PetUtilities.doorCommands.OPEN));
-bot.command('3', () => petcare.getPetRport());
-bot.command('4', () => petcare.getDeviceRport());
-bot.command('5', () => petcare.setPetPlace('Bijou', PetUtilities.petPlaceCommands.INSIDE));
-bot.command('6', () => petcare.setPetPlace('Bijou', PetUtilities.petPlaceCommands.OUTSIDE));
-bot.command('7', () => petcare.setPetPlace('Louis', PetUtilities.petPlaceCommands.INSIDE));
-bot.command('8', () => petcare.setPetPlace('Louis', PetUtilities.petPlaceCommands.OUTSIDE));
-
+bot.command('1', () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.CLOSE));
+bot.command('2', () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.OPEN));
+bot.command('3', () => petcare.resetFeeders('links'));
+bot.command('4', () => petcare.resetFeeders('rechts'));
+bot.command('5', () => petcare.resetFeeders('alle'));
+bot.command('6', () => petcare.getPetRport());
+bot.command('7', () => petcare.getDeviceRport());
+bot.command('8', () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.INSIDE));
+bot.command('9', () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.OUTSIDE));
+bot.command('10', () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.INSIDE));
+bot.command('11', () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.OUTSIDE));
+bot.command('12', () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.INSIDE));
+bot.command('13', () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.OUTSIDE));
 
 /*
 1 - Törli zue  
 2 - Törli uf
-3 - Gib status 
-4 - Batterie Grätlis
-5 - Set Bijou dinne
-6 - Set Bijou dusse
-7 - Set Louis dinne
-8 - Set Louis dusse
-
+3 - Aui Schäli links zrüg 
+4 - Aui Schäli rechts zrüg 
+5 - Aui schäli beidi site zrüg 
+6 - Gib status 
+7 - Batterie Grätlis
+8 - Set Pan dinne
+9 - Set Pan dusse
+10 - Set Nika dinne
+11 - Set Nika dusse
+12 - Set Minou dinne
+13 - Set Minou dusse
 */
