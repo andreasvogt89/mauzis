@@ -6,6 +6,8 @@ require('dotenv').config();
 
 const bot = new Telegraf(process.env.BOT_ID);
 bot.launch();
+process.once("SIGINT", () => bot.stop("SIGINT"));
+process.once("SIGTERM", () => bot.stop("SIGTERM"));
 
 const petcare = new PetCare();
 petcare.start();
@@ -24,19 +26,28 @@ petcare.on("message", (mes) => {
     bot.telegram.sendMessage(process.env.CHAT_ID, mes);
 });
 
-bot.command('1', () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.CLOSE));
-bot.command('2', () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.OPEN));
-bot.command('3', () => petcare.resetFeeders('links'));
-bot.command('4', () => petcare.resetFeeders('rechts'));
-bot.command('5', () => petcare.resetFeeders('alle'));
-bot.command('6', () => petcare.getPetRport());
-bot.command('7', () => petcare.getDeviceRport());
-bot.command('8', () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.INSIDE));
-bot.command('9', () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.OUTSIDE));
-bot.command('10', () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.INSIDE));
-bot.command('11', () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.OUTSIDE));
-bot.command('12', () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.INSIDE));
-bot.command('13', () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.OUTSIDE));
+bot.command('1', (ctx) => auth(ctx, () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.CLOSE)));
+bot.command('2', (ctx) => auth(ctx, () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.OPEN)));
+bot.command('3', (ctx) => auth(ctx, () => petcare.resetFeeders('links')));
+bot.command('4', (ctx) => auth(ctx, () => petcare.resetFeeders('rechts')));
+bot.command('5', (ctx) => auth(ctx, () => petcare.resetFeeders('alle')));
+bot.command('6', (ctx) => auth(ctx, () => petcare.getPetRport()));
+bot.command('7', (ctx) => auth(ctx, () => petcare.getDeviceRport()));
+bot.command('8', (ctx) => auth(ctx, () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.INSIDE)));
+bot.command('9', (ctx) => auth(ctx, () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.OUTSIDE)));
+bot.command('10', (ctx) => auth(ctx, () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.INSIDE)));
+bot.command('11', (ctx) => auth(ctx, () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.OUTSIDE)));
+bot.command('12', (ctx) => auth(ctx, () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.INSIDE)));
+bot.command('13', (ctx) => auth(ctx, () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.OUTSIDE)));
+
+//basic security 
+const auth = (ctx, command) => {
+    if (Array.from(process.env.USERSIDS.split(",")).includes(ctx.update.message.from.id.toString())) {
+        command();
+    } else {
+        ctx.reply("You are not authorized!")
+    }
+}
 
 /*
 1 - Törli zue  
