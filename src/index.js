@@ -42,7 +42,7 @@ bot.command('13', (ctx) => auth(ctx, () => petcare.setPetPlace('Minou', PetUtili
 
 //basic security 
 const auth = (ctx, command) => {
-    if (Array.from(process.env.USERSIDS.split(",")).includes(ctx.update.message.from.id.toString())) {
+    if (Array.from(process.env.USERIDS.split(",")).includes(ctx.update.message.from.id.toString())) {
         command();
     } else {
         ctx.reply("You are not authorized!")
