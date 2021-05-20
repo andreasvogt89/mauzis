@@ -2,7 +2,6 @@ const PetCareAPI = require('./PetCareAPI');
 const Household = require('./Household');
 const EventEmitter = require('events');
 const PetUtilities = require('./PetUtilities');
-const e = require('express');
 
 class PetCare extends EventEmitter {
 
@@ -46,27 +45,25 @@ class PetCare extends EventEmitter {
         return this.loginData && this.household ? true : false;
     }
 
-    setDoorState(msg) {
-        this.emit('info', `set door state: ${msg}`);
-        let bit = PetUtilities.getDoorCommand(msg);
-        PetCareAPI.toggleDoor(bit, this.loginData).then(res => {
-            this.emit('message', Array.isArray(res.results) ? "ok 😊" : res.results ? `isch dänk scho ${PetUtilities.getDoorState(bit)}😝` : "öpis isch nid guet😑")
+    setDoorState(name, command) {
+        this.emit('info', `set ${name} to ${PetUtilities.doorStates[command]}`);
+        let { id } = this.household.$household.data.devices.find(device => device.name === name);
+        PetCareAPI.toggleDoor(id, command, this.loginData).then(res => {
+            this.emit('message', Array.isArray(res.results) ? PetUtilities.successMsg : res.results ? PetUtilities.doorAlready(command) : PetUtilities.somethingWrongMsg)
         }).catch(err => {
             this.emit('error', `set door state error: ${err}`);
         });
     }
 
-    newPetPlace(msg) {
-        this.emit('info', `set pet place: ${msg}`);
-        let pet = this.household.pets[msg.split(' ')[0].charAt(0).toUpperCase() + msg.split(' ')[0].slice(1)];
-        if (pet.place === msg.split(' ')[1]) {
-            this.emit('message', `${pet.name} isch dänk scho ${msg.split(' ')[1]}🙄`);
+    setPetPlace(name, command) {
+        this.emit('info', `set ${name} to ${PetUtilities.placeNames[command]}`);
+        let pet = this.household.$household.data.pets.find(pet => pet.name === name);
+        if (pet.status.activity.where === command) {
+            this.emit('message', PetUtilities.petIsAlready(command));
+
         } else {
-            let placeInBit = PetUtilities.getPetPlaceCommand(msg.split(' ')[1]);
-            PetCareAPI.setPetPlace(pet.petID, placeInBit, this.loginData).then(res => {
-                this.emit('info', JSON.stringify(res));
-                this.emit('message', res.data ? "ok 😊" : "öpis isch nid guet😑");
-                this.household.pets[pet.name].place = msg.split(' ')[1];
+            PetCareAPI.setPetPlace(pet.id, command, this.loginData).then(res => {
+                this.emit('message', res.data ? PetUtilities.successMsg : PetUtilities.somethingWrongMsg);
             }).catch(err => {
                 this.emit('error', `set pet place error: ${err}`);
             });
@@ -91,27 +88,33 @@ class PetCare extends EventEmitter {
     }
 
     getPetRport() {
-        let mes = `${this.household.name} isch ${this.household.doorState}\n***************************\n`
-        let pets = this.household.pets
-        Object.keys(pets).forEach(petName => {
-            mes = `${mes}${petName} isch ${pets[petName].place}${PetUtilities.getPlaceEmoij(pets[petName].place)}\n` +
-                `Nass:\n` +
-                `${pets[petName].eatenWet}g vo ${pets[petName].lastFillWet}g gässe, ${pets[petName].currentWet}g übrig \n` +
-                `Gsamt ${pets[petName].eatenWetSoFar}g vo ${pets[petName].fillWetToday}g gässe\n` +
-                `Troche:\n` +
-                `${pets[petName].eatenDry}g vo ${pets[petName].lastFillDry}g gässe, ${pets[petName].currentDry}g übrig \n` +
-                `Gsamt ${pets[petName].eatenDrySoFar}g vo ${pets[petName].fillDryToday}g gässe\n` +
-                `***************************\n`
+        let msg = "";
+        this.household.$household.data.devices.forEach(device => {
+            if (device.product_id === PetUtilities.products.DOOR || device.product_id === PetUtilities.products.DOOR_SMALL) {
+                msg = `${device.name} isch ${PetUtilities.doorStates[device.status.locking.mode]}\n***************************\n`
+            }
+        })
+        this.household.$household.data.pets.forEach(pet => {
+            let where = PetUtilities.placeNames[pet.status.activity.where]
+            msg = `${msg}${pet.name} isch ${where}${PetUtilities.getPlaceEmoij(where)}\n`;
+            if (this.household.pets[pet.name]) {
+                msg = `${msg}Nass:\n` +
+                    `${this.household.pets[pet.name].eatenWet}g vo ${this.household.pets[pet.name].lastFillWet}g gässe, ${this.household.pets[pet.name].currentWet}g übrig \n` +
+                    `Gsamt ${this.household.pets[pet.name].eatenWetSoFar}g vo ${this.household.pets[pet.name].fillWetToday}g gässe\n` +
+                    `Troche:\n` +
+                    `${this.household.pets[pet.name].eatenDry}g vo ${this.household.pets[pet.name].lastFillDry}g gässe, ${this.household.pets[pet.name].currentDry}g übrig \n` +
+                    `Gsamt ${this.household.pets[pet.name].eatenDrySoFar}g vo ${this.household.pets[pet.name].fillDryToday}g gässe\n` +
+                    `***************************\n`
+            }
         });
-        this.emit('message', mes);
+        this.emit('message', msg);
     }
 
     getDeviceRport() {
         let mes = '\n***************************\n'
-        let devices = this.household.devices;
-        Object.keys(devices).forEach(device => {
-            if (devices[device].status.battery) {
-                mes = `${mes}${device}: ${devices[device].status.battery}\n`
+        this.household.$household.data.devices.forEach(device => {
+            if (device.status.battery) {
+                mes = `${mes}${device.name}: ${device.status.battery}\n`
             }
         });
         this.emit('message', mes);
