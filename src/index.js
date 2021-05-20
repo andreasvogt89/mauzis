@@ -28,17 +28,13 @@ petcare.on("message", (mes) => {
 
 bot.command('1', (ctx) => auth(ctx, () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.CLOSE)));
 bot.command('2', (ctx) => auth(ctx, () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.OPEN)));
-bot.command('3', (ctx) => auth(ctx, () => petcare.resetFeeders('links')));
-bot.command('4', (ctx) => auth(ctx, () => petcare.resetFeeders('rechts')));
-bot.command('5', (ctx) => auth(ctx, () => petcare.resetFeeders('alle')));
-bot.command('6', (ctx) => auth(ctx, () => petcare.getPetRport()));
-bot.command('7', (ctx) => auth(ctx, () => petcare.getDeviceRport()));
-bot.command('8', (ctx) => auth(ctx, () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.INSIDE)));
-bot.command('9', (ctx) => auth(ctx, () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.OUTSIDE)));
-bot.command('10', (ctx) => auth(ctx, () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.INSIDE)));
-bot.command('11', (ctx) => auth(ctx, () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.OUTSIDE)));
-bot.command('12', (ctx) => auth(ctx, () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.INSIDE)));
-bot.command('13', (ctx) => auth(ctx, () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.OUTSIDE)));
+bot.command('3', (ctx) => auth(ctx, () => petcare.getPetRport()));
+bot.command('4', (ctx) => auth(ctx, () => petcare.getDeviceRport()));
+bot.command('5', (ctx) => auth(ctx, () => petcare.setPetPlace('Bijou', PetUtilities.petPlaceCommands.INSIDE)));
+bot.command('6', (ctx) => auth(ctx, () => petcare.setPetPlace('Bijou', PetUtilities.petPlaceCommands.OUTSIDE)));
+bot.command('7', (ctx) => auth(ctx, () => petcare.setPetPlace('Louis', PetUtilities.petPlaceCommands.INSIDE)));
+bot.command('8', (ctx) => auth(ctx, () => petcare.setPetPlace('Louis', PetUtilities.petPlaceCommands.OUTSIDE)));
+
 
 //basic security 
 const auth = (ctx, command) => {
@@ -52,15 +48,10 @@ const auth = (ctx, command) => {
 /*
 1 - Törli zue  
 2 - Törli uf
-3 - Aui Schäli links zrüg 
-4 - Aui Schäli rechts zrüg 
-5 - Aui schäli beidi site zrüg 
-6 - Gib status 
-7 - Batterie Grätlis
-8 - Set Pan dinne
-9 - Set Pan dusse
-10 - Set Nika dinne
-11 - Set Nika dusse
-12 - Set Minou dinne
-13 - Set Minou dusse
+3 - Gib status 
+4 - Batterie Grätlis
+5 - Set Bijou dinne
+6 - Set Bijou dusse
+7 - Set Louis dinne
+8 - Set Louis dusse
 */
