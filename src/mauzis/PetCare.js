@@ -114,7 +114,7 @@ class PetCare extends EventEmitter {
         let mes = '\n***************************\n'
         this.household.$household.data.devices.forEach(device => {
             if (device.status.battery) {
-                mes = `${mes}${device.name}: ${device.status.battery}\n`
+                mes = `${mes}${device.name}: ${Math.round((device.status.battery / 5.6) * 100)}%\n`
             }
         });
         this.emit('message', mes);

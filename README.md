@@ -22,3 +22,8 @@ Copy in Unraid (Domain specific)
 ```
 cp /boot/config/plugins/dockerMAn/templates-user/my-Mauzis.xml /boot/config/plugins/community.applications/private/myrepo
 ```
+
+Get ID's and stuff
+```
+https://api.telegram.org/bot<YourBOTToken>/getUpdates
+```

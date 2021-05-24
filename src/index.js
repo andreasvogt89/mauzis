@@ -32,7 +32,24 @@ bot.command('3', (ctx) => auth(ctx, () => petcare.resetFeeders('links')));
 bot.command('4', (ctx) => auth(ctx, () => petcare.resetFeeders('rechts')));
 bot.command('5', (ctx) => auth(ctx, () => petcare.resetFeeders('alle')));
 bot.command('6', (ctx) => auth(ctx, () => petcare.getPetRport()));
-bot.command('7', (ctx) => auth(ctx, () => petcare.getDeviceRport()));
+bot.command('7', (ctx) => auth(ctx, () => {
+    petcare.getDeviceRport();
+    require('./tractive-hook')((res) => {
+        if (res) {
+            /*Temp Mapping*/
+            let map = {
+                "TKJHLTXY": "Minou",
+                "TLCEWOPY": "Pan",
+                "TWCAHAFR": "Nika",
+            }
+            bot.telegram.sendMessage(process.env.CHAT_ID, res.reduce((acc, val) => {
+                return `${acc}${map[val.tracker]}: ${val.battery}\n`
+            }, "Trackers\n***************************\n"));
+        } else {
+            logger.error(`Tractive Error; ${res}`)
+        }
+    });
+}));
 bot.command('8', (ctx) => auth(ctx, () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.INSIDE)));
 bot.command('9', (ctx) => auth(ctx, () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.OUTSIDE)));
 bot.command('10', (ctx) => auth(ctx, () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.INSIDE)));
