@@ -19,7 +19,7 @@ class PetCareAPI {
             },
             "referrer": "https://www.surepetcare.io/",
             "referrerPolicy": "strict-origin-when-cross-origin",
-            "body": `{\"email_address\":\"${process.env.MAIL}\",\"password\":\"${process.env.PASSWORD}\",\"${process.env.DEVICE_ID}\":\"${null}\"}`,
+            "body": `{\"email_address\":\"${process.env.MAIL}\",\"password\":\"${process.env.PASSWORD}\",\"device_id\":\"${null}\"}`,
             "method": "POST",
             "mode": "cors",
             "credentials": "omit"

@@ -17,7 +17,10 @@ class PetCare extends EventEmitter {
         await PetCareAPI.login()
             .then(json => {
                 this.emit('info', `Login Percare successful, user: ${json.data.user.id}`);
+                
+
                 this.emit('info', "next in 12h");
+                
                 this.loginData = json.data;
                 this.household = new Household();
                 this.household.inizialzie(this.loginData).then(() => {
