@@ -2,6 +2,8 @@ const PetCareAPI = require('./PetCareAPI');
 const Household = require('./Household');
 const EventEmitter = require('events');
 const PetUtilities = require('./PetUtilities');
+const cron = require('node-cron');
+const { lchown } = require('fs');
 
 class PetCare extends EventEmitter {
 
@@ -32,7 +34,7 @@ class PetCare extends EventEmitter {
             }).catch((err) => {
                 this.emit('error', `Login Petcare failed: ${err}`);
             });
-        setInterval(() => {
+        cron.schedule('0 11-23 * * *', async() => {
             PetCareAPI.login()
                 .then(json => {
                     this.emit('info', `Login Percare successful, user: ${json.data.user.id}`);
@@ -41,7 +43,7 @@ class PetCare extends EventEmitter {
                 }).catch((err) => {
                     this.emit('error', `Login Petcare failed: ${err}`)
                 });
-        }, 12 * 3600 * 1000);
+        });
         return this.loginData && this.household ? true : false;
     }
 
@@ -73,16 +75,13 @@ class PetCare extends EventEmitter {
     resetFeeders(msg) {
         this.emit('info', `reset feeders ${msg}`);
         let pets = this.household.pets;
-        Object.keys(pets).forEach((petName) => {
+        Object.keys(pets).forEach(async(petName) => {
+            await new Promise(r => setTimeout(r, 1000));
             PetCareAPI.resetFeeder(PetUtilities.getTareVal(msg), pets[petName].device, this.loginData)
                 .then(res => {
-                    if (res.results) {
-                        this.emit('message', `${pets[petName].deviceName}:\n${PetUtilities.getTareText(res.results[0].data.tare)} zrüggsetzt`);
-                    } else {
-                        this.emit('message', `${pets[petName].deviceName}:\n Hmm öbis isch nid guet 🤕`);
-                    }
+                    if (!res.results) this.emit('message', `${pets[petName].deviceName}:\n Hmm öbis isch nid guet 🤕`);
                 }).catch(err => {
-                    this.emit('error', `set door state error: ${err}`);
+                    this.emit('error', `reset feeder: ${err}`);
                 });
         });
     }
@@ -114,7 +113,11 @@ class PetCare extends EventEmitter {
         let mes = '\n***************************\n'
         this.household.$household.data.devices.forEach(device => {
             if (device.status.battery) {
-                mes = `${mes}${device.name}: ${device.status.battery}\n`
+                let bat_FULL = 1.6; //volt
+                let bat_LOW = 1.2; //volt
+                let voltage = device.status.battery / 4; //cos 4 batteries
+                let percent = Math.round(((voltage - bat_LOW) / (bat_FULL - bat_LOW)) * 100);
+                mes = `${mes}${device.name}: ${percent > 100 ? 100 : percent}% (${Math.round(device.status.battery * 100) / 100}v)\n`
             }
         });
         this.emit('message', mes);

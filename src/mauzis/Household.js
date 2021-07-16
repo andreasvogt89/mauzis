@@ -83,8 +83,15 @@ class Household {
 
     async getUpdates(loginData) {
         let updates = [];
-        this.$household = await PetCareAPI.getState(loginData);
-        let newTimeline = await PetCareAPI.getTimeline(this.$household.data.households[0].id, loginData);
+        let newTimeline = null;
+        try {
+            this.$household = await PetCareAPI.getState(loginData);
+            newTimeline = await PetCareAPI.getTimeline(this.$household.data.households[0].id, loginData);
+        } catch (err) {
+            this.emit('error', err);
+            //return empty updates to prevent more errors
+            return updates;
+        }
         newTimeline.data.forEach(entry => {
             if (!this.usedTimelineIds.has(entry.id)) {
                 this.usedTimelineIds.set(entry.id, entry.created_at);
@@ -146,11 +153,11 @@ class Household {
                 if (entry.type === 24) {
                     Object.keys(this.pets).forEach(petName => {
                         if (entry.devices[0].name === this.pets[petName].deviceName) {
-                            let tare = PetUtilities.getTareText(JSON.parse(entry.data).tare_type)
                             let currentDry = Math.round(entry.weights[0].frames[0].current_weight);
                             let currentWet = Math.round(entry.weights[0].frames[1].current_weight);
                             this.pets[petName].currentWet = currentWet;
                             this.pets[petName].currentDry = currentDry;
+                            updates.push(`${entry.devices[0].name } ${PetUtilities.getTareText(JSON.parse(entry.data).tare_type)} zrüggsetzt`)
                         }
                     });
                 }
