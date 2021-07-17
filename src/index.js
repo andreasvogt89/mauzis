@@ -22,7 +22,6 @@ petcare.on("error", (err) => {
 });
 
 petcare.on("message", (mes) => {
-    logger.info(mes);
     bot.telegram.sendMessage(process.env.CHAT_ID, mes);
 });
 

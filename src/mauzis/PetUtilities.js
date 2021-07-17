@@ -36,7 +36,7 @@ class PetUtilities {
         PROGRAMMER: 5,
         DOOR_SMALL: 6,
         FEEDER_LITE: 7,
-        FELQUA: 8,
+        FELAQUA: 8,
     }
 
     static getTareVal(msg) {
@@ -54,7 +54,7 @@ class PetUtilities {
             bit === 2 ? `${petName} isch use, stay safe ❤️` : `${petName} het dürs törli gluegt 👀`
     }
 
-    static unknownMovmentPhrase(bit) {
+    static unknownMovementPhrase(bit) {
         return bit === 2 ? "Het äuä öper d Hang durs törli gha..." : "Es angers chätzli het id stube gluegt 😺";
     }
 

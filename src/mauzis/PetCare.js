@@ -3,7 +3,7 @@ const Household = require('./Household');
 const EventEmitter = require('events');
 const PetUtilities = require('./PetUtilities');
 const cron = require('node-cron');
-const { lchown } = require('fs');
+
 
 class PetCare extends EventEmitter {
 
@@ -21,13 +21,16 @@ class PetCare extends EventEmitter {
                 this.loginData = json.data;
                 this.household = new Household();
                 this.household.inizialzie(this.loginData).then(() => {
+                    let polling_seconds = process.env.PETCARE_UPDATE_POLLING_SECONDS || 10
                     setInterval(() => {
                         this.household.getUpdates(this.loginData).then(updates => {
                             updates.forEach(update => {
                                 this.emit('message', update);
-                            });
+                            })
+                        }).catch(err=>{
+                            this.emit('error', `Get Updates from Patecare failed: ${err}`);            
                         });
-                    }, 10000);
+                    }, 1000 * polling_seconds);
                 }).catch(err => {
                     this.emit('error', `Household failed: ${err}`);
                 });
@@ -87,40 +90,50 @@ class PetCare extends EventEmitter {
     }
 
     getPetRport() {
-        let msg = "";
-        this.household.$household.data.devices.forEach(device => {
-            if (device.product_id === PetUtilities.products.DOOR || device.product_id === PetUtilities.products.DOOR_SMALL) {
-                msg = `${device.name} isch ${PetUtilities.doorStates[device.status.locking.mode]}\n***************************\n`
-            }
-        })
-        this.household.$household.data.pets.forEach(pet => {
-            let where = PetUtilities.placeNames[pet.status.activity.where]
-            msg = `${msg}${pet.name} isch ${where}${PetUtilities.getPlaceEmoij(where)}\n`;
-            if (this.household.pets[pet.name]) {
-                msg = `${msg}Nass:\n` +
-                    `${this.household.pets[pet.name].eatenWet}g vo ${this.household.pets[pet.name].lastFillWet}g gässe, ${this.household.pets[pet.name].currentWet}g übrig \n` +
-                    `Gsamt ${this.household.pets[pet.name].eatenWetSoFar}g vo ${this.household.pets[pet.name].fillWetToday}g gässe\n` +
-                    `Troche:\n` +
-                    `${this.household.pets[pet.name].eatenDry}g vo ${this.household.pets[pet.name].lastFillDry}g gässe, ${this.household.pets[pet.name].currentDry}g übrig \n` +
-                    `Gsamt ${this.household.pets[pet.name].eatenDrySoFar}g vo ${this.household.pets[pet.name].fillDryToday}g gässe\n` +
-                    `***************************\n`
-            }
-        });
-        this.emit('message', msg);
+        try {
+            let msg = "";
+            this.household.$household.data.devices.forEach(device => {
+                if (device.product_id === PetUtilities.products.DOOR || device.product_id === PetUtilities.products.DOOR_SMALL) {
+                    msg = `${device.name} isch ${PetUtilities.doorStates[device.status.locking.mode]}\n***************************\n`
+                }
+            })
+            this.household.$household.data.pets.forEach(pet => {
+                let where = PetUtilities.placeNames[pet.status.activity.where]
+                msg = `${msg}${pet.name} isch ${where}${PetUtilities.getPlaceEmoij(where)}\n`;
+                if (this.household.pets[pet.name]) {
+                    msg = `${msg}Nass:\n` +
+                        `${this.household.pets[pet.name].eatenWet}g vo ${this.household.pets[pet.name].lastFillWet}g gässe, ${this.household.pets[pet.name].currentWet}g übrig \n` +
+                        `Gsamt ${this.household.pets[pet.name].eatenWetSoFar}g vo ${this.household.pets[pet.name].fillWetToday}g gässe\n` +
+                        `Troche:\n` +
+                        `${this.household.pets[pet.name].eatenDry}g vo ${this.household.pets[pet.name].lastFillDry}g gässe, ${this.household.pets[pet.name].currentDry}g übrig \n` +
+                        `Gsamt ${this.household.pets[pet.name].eatenDrySoFar}g vo ${this.household.pets[pet.name].fillDryToday}g gässe\n` +
+                        `Und het bis iz ${this.household.pets[pet.name].drank}ml drunke\n` + 
+                        `***************************\n`
+                }
+                msg = `${msg}Felaqua stand: ${this.household.felaqua_level}ml`
+            });
+            this.emit('message', msg);
+        } catch (err) {
+            this.emit('err',`Pet report error: ${err}`)
+        }
     }
 
     getDeviceRport() {
-        let mes = '\n***************************\n'
-        this.household.$household.data.devices.forEach(device => {
-            if (device.status.battery) {
-                let bat_FULL = 1.6; //volt
-                let bat_LOW = 1.2; //volt
-                let voltage = device.status.battery / 4; //cos 4 batteries
-                let percent = Math.round(((voltage - bat_LOW) / (bat_FULL - bat_LOW)) * 100);
-                mes = `${mes}${device.name}: ${percent > 100 ? 100 : percent}% (${Math.round(device.status.battery * 100) / 100}v)\n`
-            }
-        });
-        this.emit('message', mes);
+        try {
+            let mes = '\n***************************\n'
+            this.household.$household.data.devices.forEach(device => {
+                if (device.status.battery) {
+                    let bat_FULL = process.env.BATTERY_FULL || 1.6;
+                    let bat_LOW = process.env.BATTERY_LOW || 1.2; 
+                    let voltage = device.status.battery / 4; //cos 4 batteries
+                    let percent = Math.round(((voltage - bat_LOW) / (bat_FULL - bat_LOW)) * 100);
+                    mes = `${mes}${device.name}: ${percent > 100 ? 100 : percent}% (${Math.round(device.status.battery * 100) / 100}v)\n`
+                }
+            });
+            this.emit('message', mes);
+        } catch (err) {
+            this.emit('err',`Device report error: ${err}`)
+        }
     }
 }
 module.exports = PetCare;
