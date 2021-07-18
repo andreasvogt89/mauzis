@@ -20,7 +20,7 @@ class Household {
         let foodFillings = timeline.filter(entry => entry.type === 21);
         let drinkings = timeline.filter(entry => entry.type === 29);
         let fd = timeline.filter(entry => entry.type === 29 || entry.type === 30);
-        let felaquaMessages = fd.filter(entry => entry.type === 34);
+        let felaquaMessages = fd.concat(timeline.filter(entry => entry.type === 34));
         this.$household.data.pets.forEach($pet => {
             if ($pet.status.feeding) {
                 let $device = this.$household.data.devices.find(device => device.id == $pet.status.feeding.device_id);
@@ -34,15 +34,15 @@ class Household {
                     deviceName: $device.name,
                     wetTarget: $device.control.bowls.settings[0].target,
                     dryTarget: $device.control.bowls.settings[1].target,
-                    currentDry: Math.round(eating[eating.length - 1].weights[0].frames[0].current_weight),
-                    currentWet: Math.round(eating[eating.length - 1].weights[0].frames[1].current_weight),
-                    lastEatenDry: Math.round(eating[eating.length - 1].weights[0].frames[0].change) * -1,
-                    lastEatenWet: Math.round(eating[eating.length - 1].weights[0].frames[1].change) * -1,
+                    currentDry: Math.round(this.getNewestEntry(eating).weights[0].frames[0].current_weight),
+                    currentWet: Math.round(this.getNewestEntry(eating).weights[0].frames[1].current_weight),
+                    lastEatenDry: Math.round(this.getNewestEntry(eating).weights[0].frames[0].change * -1) ,
+                    lastEatenWet: Math.round(this.getNewestEntry(eating).weights[0].frames[1].change * -1) ,
                     eatenDrySoFar: this.getEatingsFromToday(eating, 0),
                     eatenWetSoFar: this.getEatingsFromToday(eating, 1),
                     drank: this.getDrinkingsFromToday(drinking),
-                    lastFillDry: Math.round(foodFilling[foodFilling.length - 1].weights[0].frames[0].current_weight),
-                    lastFillWet: Math.round(foodFilling[foodFilling.length - 1].weights[0].frames[1].current_weight),
+                    lastFillDry: Math.round(this.getNewestEntry(foodFilling).weights[0].frames[0].current_weight),
+                    lastFillWet: Math.round(this.getNewestEntry(foodFilling).weights[0].frames[1].current_weight),
                     fillWetToday: this.getFoodFillingsFromToday(foodFilling, 1),
                     fillDryToday: this.getFoodFillingsFromToday(foodFilling, 0),
                     lastFillFood: new Date().toLocaleDateString(),
@@ -51,18 +51,14 @@ class Household {
                 };
                 this.pets[$pet.name].eatenDry = this.pets[$pet.name].lastFillDry - this.pets[$pet.name].currentDry;
                 this.pets[$pet.name].eatenWet = this.pets[$pet.name].lastFillWet - this.pets[$pet.name].currentWet;
-                let level = felaquaMessages.map(v=>{return {
-                    date: new Date(v.updated_at),
-                    level: Math.round(entry.weights[0].frames[0].current_weight)
-                }}).sort((a, b) => b.date - a.date);
-                this.felaqua_level = level.length > 0 ? level[0].level : 0;
+                let msg = this.getNewestEntry(felaquaMessages);
+                this.felaqua_level = msg ? Math.round(msg.weights[0].frames[0].current_weight) : 0;
             }
         });
     };
 
     async getTodaysTimeline(loginData) {
-        let now = new Date(new Date().setHours(new Date().getHours() + 2));
-        let startOfDay = new Date(now.setHours(2,0,0,0));
+        let startOfDay = new Date(new Date().setHours(0,0,0,0));
         let timeline = [];
         let firstload = await PetCareAPI.getTimeline(this.$household.data.households[0].id, loginData);
         timeline = timeline.concat(firstload.data);
@@ -89,7 +85,7 @@ class Household {
 
     getEatingsFromToday(eating, id) {
         return eating.reduce((acu, entry) => {
-            return acu + Math.round(entry.weights[0].frames[id].change) * -1
+            return acu + Math.round(entry.weights[0].frames[id].change * -1) 
         }, 0);
     }
 
@@ -149,8 +145,8 @@ class Household {
                         if (entry.devices[0].name === this.pets[petName].deviceName) {
                             let currentDry = Math.round(entry.weights[0].frames[0].current_weight);
                             let currentWet = Math.round(entry.weights[0].frames[1].current_weight);
-                            let eatenDry = Math.round(entry.weights[0].frames[0].change) * -1;
-                            let eatenWet = Math.round(entry.weights[0].frames[1].change) * -1
+                            let eatenDry = Math.round(entry.weights[0].frames[0].change * -1) ;
+                            let eatenWet = Math.round(entry.weights[0].frames[1].change * -1) 
                             this.pets[petName].currentWet = currentWet;
                             this.pets[petName].currentDry = currentDry;
                             this.pets[petName].eatenDry += eatenDry; 
@@ -223,6 +219,10 @@ class Household {
                 this.usedTimelineIds.delete(key);
             }
         });
+    }
+
+    getNewestEntry(entries){
+       return entries.sort((a,b)=> a.updated_at - b.updated_at)[0]; 
     }
 }
 

@@ -37,7 +37,7 @@ class PetCare extends EventEmitter {
             }).catch((err) => {
                 this.emit('error', `Login Petcare failed: ${err}`);
             });
-        cron.schedule('0 11-23 * * *', async() => {
+        cron.schedule('0 11,23 * * *', async() => {
             PetCareAPI.login()
                 .then(json => {
                     this.emit('info', `Login Percare successful, user: ${json.data.user.id}`);
