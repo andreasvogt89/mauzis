@@ -8,7 +8,6 @@ class Household {
         this.pets = {};
         this.usedTimelineIds = new Map();
         this.started_at = new Date().getTime();
-        this.felaqua_level = 0;
     }
 
     async inizialzie(loginData) {
@@ -62,8 +61,8 @@ class Household {
     };
 
     async getTodaysTimeline(loginData) {
-        let now = new Date();
-        let startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        let now = new Date(new Date().setHours(new Date().getHours() + 2));
+        let startOfDay = new Date(now.setHours(2,0,0,0));
         let timeline = [];
         let firstload = await PetCareAPI.getTimeline(this.$household.data.households[0].id, loginData);
         timeline = timeline.concat(firstload.data);
@@ -203,7 +202,7 @@ class Household {
                 //Reminder Fresh Water for Felaqua
                 if(entry.type === 32){
                     let device = entry.devices[0].name;
-                    updates.push(`${device} set neus wasser ha befüllt`);
+                    updates.push(`${device} set neus wasser ha!`);
                 }                
                 //Unknown Felaqua
                 if(entry.type === 34){

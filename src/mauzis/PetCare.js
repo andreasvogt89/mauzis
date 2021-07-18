@@ -110,8 +110,10 @@ class PetCare extends EventEmitter {
                         `Und het bis iz ${this.household.pets[pet.name].drank}ml drunke\n` + 
                         `***************************\n`
                 }
-                msg = `${msg}Felaqua stand: ${this.household.felaqua_level}ml`
             });
+            if(this.household.felaqua_level >= 0){
+                msg = `${msg}Felaqua stand: ${this.household.felaqua_level}ml`
+            }
             this.emit('message', msg);
         } catch (err) {
             this.emit('err',`Pet report error: ${err}`)
