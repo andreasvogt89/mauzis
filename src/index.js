@@ -5,7 +5,9 @@ const PetUtilities = require('./mauzis/PetUtilities');
 require('dotenv').config();
 
 const bot = new Telegraf(process.env.BOT_ID);
-bot.launch();
+
+bot.launch().catch(err=>logger.error(`Bot: ${err}`));
+
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));
 
@@ -25,12 +27,12 @@ petcare.on("message", (mes) => {
     bot.telegram.sendMessage(process.env.CHAT_ID, mes);
 });
 
-bot.command('1', (ctx) => auth(ctx, () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.CLOSE)));
-bot.command('2', (ctx) => auth(ctx, () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.OPEN)));
-bot.command('3', (ctx) => auth(ctx, () => petcare.resetFeeders('links')));
-bot.command('4', (ctx) => auth(ctx, () => petcare.resetFeeders('rechts')));
-bot.command('5', (ctx) => auth(ctx, () => petcare.resetFeeders('alle')));
-bot.command('6', (ctx) => auth(ctx, () => petcare.getPetRport()));
+bot.command('1', (ctx) => auth(ctx, () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.CLOSE))).catch(err=>logger.error(`Bot: ${err}`));
+bot.command('2', (ctx) => auth(ctx, () => petcare.setDoorState('Mauzis Welt', PetUtilities.doorCommands.OPEN))).catch(err=>logger.error(`Bot: ${err}`));
+bot.command('3', (ctx) => auth(ctx, () => petcare.resetFeeders('links'))).catch(err=>logger.error(`Bot: ${err}`));
+bot.command('4', (ctx) => auth(ctx, () => petcare.resetFeeders('rechts'))).catch(err=>logger.error(`Bot: ${err}`));
+bot.command('5', (ctx) => auth(ctx, () => petcare.resetFeeders('alle'))).catch(err=>logger.error(`Bot: ${err}`));
+bot.command('6', (ctx) => auth(ctx, () => petcare.getPetRport())).catch(err=>logger.error(`Bot: ${err}`));;
 bot.command('7', (ctx) => auth(ctx, () => {
     petcare.getDeviceRport();
     require('./tractive-hook')((res) => {
@@ -48,13 +50,13 @@ bot.command('7', (ctx) => auth(ctx, () => {
             logger.error(`Tractive Error; ${res}`)
         }
     });
-}));
-bot.command('8', (ctx) => auth(ctx, () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.INSIDE)));
-bot.command('9', (ctx) => auth(ctx, () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.OUTSIDE)));
-bot.command('10', (ctx) => auth(ctx, () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.INSIDE)));
-bot.command('11', (ctx) => auth(ctx, () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.OUTSIDE)));
-bot.command('12', (ctx) => auth(ctx, () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.INSIDE)));
-bot.command('13', (ctx) => auth(ctx, () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.OUTSIDE)));
+})).catch(err=>logger.error(`Bot: ${err}`));
+bot.command('8', (ctx) => auth(ctx, () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.INSIDE))).catch(err=>logger.error(`Bot: ${err}`));
+bot.command('9', (ctx) => auth(ctx, () => petcare.setPetPlace('Pan', PetUtilities.petPlaceCommands.OUTSIDE))).catch(err=>logger.error(`Bot: ${err}`));
+bot.command('10', (ctx) => auth(ctx, () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.INSIDE))).catch(err=>logger.error(`Bot: ${err}`));
+bot.command('11', (ctx) => auth(ctx, () => petcare.setPetPlace('Nika', PetUtilities.petPlaceCommands.OUTSIDE))).catch(err=>logger.error(`Bot: ${err}`));
+bot.command('12', (ctx) => auth(ctx, () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.INSIDE))).catch(err=>logger.error(`Bot: ${err}`));
+bot.command('13', (ctx) => auth(ctx, () => petcare.setPetPlace('Minou', PetUtilities.petPlaceCommands.OUTSIDE))).catch(err=>logger.error(`Bot: ${err}`));
 
 //basic security 
 const auth = (ctx, command) => {
