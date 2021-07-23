@@ -91,7 +91,7 @@ class Household {
 
     getDrinkingsFromToday(drinking){
         return drinking.reduce((acu,entry) =>{
-            return acu + Math.round(entry.weights[0].frames[id].change) * -1
+            return acu + Math.round(entry.weights[0].frames[0].change) * -1
         },0);
     }
 
